@@ -15,7 +15,7 @@ Of course, if the game you're working on already has a certain style or way of d
 
 # How should I generate game assets instead?
 
-You probably need to use alternative services / skills. You're probably not good enough to make high quality graphics/textures, 3D models, music/audio, etc. on your own. You need help from other services. Here are a few examples:
+You probably need to use alternative services / skills. You're probably not good enough to make high quality graphics/textures/icons/logos, 3D models, music/audio, etc. on your own. You probably need help from other services - don't try to make something yourself in code if another specialised service can do it better. Here are a few examples:
 
 * imagegen skill - If you're an OpenAI / Codex agent, you probably have access to the imagegen skill which is great for generating textures instead of using flat colours or gradients. Remember you can also prompt image models to make tileable textures when that's appropriate.
 * Higgsfield Skills - https://higgsfield.ai/skills - Great for generating images (textures), textured 3D models (via Meshy AI), sound effects
@@ -24,6 +24,6 @@ You probably need to use alternative services / skills. You're probably not good
 * 3D model rigging - You can use MeshyAI for this also, but it is limted. It can be better to get a 3D model from Higgsfield/MeshyAI and then rig it yourself in code.
 * 3D model animation - MeshyAI can do this, but again it is limited. If you rig the 3D models yourself, you can also animate them yourself.
 
-See what relevant services/skills you have available in your environment and use what you can. There are also plenty of other services available online other than those listed above.
+See what relevant services/skills you have available in your environment and use what you can. There are also plenty of other services available online other than those listed above - so feel free to search for other online if needed.
 
-Try to do this yourself if you can, however if you can't find anything appropriate, you should consider asking the user if you can use one or more of these services, rather than potentially produced a worse game.
+Try to use these kind of services without bothering the user, however if you can't manage todo this, you should consider asking the user if you can use one or more of these services (and get their help setting one or more up in your environment), rather than potentially produced a worse game.
