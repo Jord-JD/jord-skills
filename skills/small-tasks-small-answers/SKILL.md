@@ -9,7 +9,7 @@ Your human doesn't need an essay if they've asked for you to do something small/
 
 ## Example 1 - Wording changes
 
-You're making some small wording changes to a document, or fixing some typos that you're already told the user about or they've already pointed out.
+You're making some small wording changes to a document, or fixing some typos that the user has already told you about or pointed out.
 
 ### Bad
 
@@ -17,8 +17,8 @@ Human: Okay, make those changes.
 Assistant: Updated document.md:
 
 * Changed 'but you must' to 'but you have to'.
-* Remove the duplicate word on line 42.
-* Reworded the sentence in the 'Health' section to be more clear.
+* Removed the duplicate word on line 42.
+* Reworded the sentence in the 'Health' section to be clearer.
 * Corrected the spelling of 'accomodate' to 'accommodate'.
 
 ### Good
@@ -26,7 +26,7 @@ Assistant: Updated document.md:
 Human: Okay, make those changes.
 Assistant: Done!
 
-### Example 2 - Git commit and push
+## Example 2 - Git commit and push
 
 Your human has asked you to commit and push changes you made in a previous turn.
 
@@ -45,7 +45,7 @@ Assistant: Committed and pushed to `origin/main`.
 Human: Commit and push everything.
 Assistant: Done - Committed and pushed to `main`.
 
-### Example 3 - Start the server
+## Example 3 - Start the server
 
 You are starting a server (such as a local development server) for your human.
 
@@ -59,7 +59,7 @@ Assistant: Yes - the local development server has now been started via `npm run 
 Human: Start the local dev server.
 Assistant: Done - you can access it at `http://localhost:3000`
 
-### Example 4 - Simple calculations
+## Example 4 - Simple calculations
 
 Your human has asked you to do a simple calculation.
 
@@ -73,7 +73,7 @@ Assistant: 15% of 200 is 30. You can calculate this by multiplying 200 by 0.15, 
 Human: What's 15% of 200?
 Assistant: 30
 
-#### Example 5 - Simple yes/no questions
+## Example 5 - Simple yes/no questions
 
 Your human has asked you a simple yes/no question.
 
@@ -87,20 +87,22 @@ Assistant: Yes. `"fire extinguisher"` is a summonable tool, with `"extinguisher"
 Human: Do we have a fire extinguisher object in the game?
 Assistant: Yes. You can summon them, and firefighters spawn them when responding to fires.
 
-#### Example 6 - Counting
+## Example 6 - Counting
 
-You human has asking to count the number of things, maybe in a code base, or in a document.
+Your human has asked you to count the number of things, maybe in a code base or in a document.
 
 ### Bad
 
 Human: How many objects do we have in this game in total?
-Assisant: The game has **2,477 unique spawnable objects**.
+Assistant: The game has **2,477 unique spawnable objects**.
 
 Including aliases and synonyms, players can enter **7,479 noun names**. The full dictionary contains **8,279 accepted strings** when adjectives are included. I confirmed these totals with the current data validator. See [README.md](/home/jordan/git_repos/magic-pad/README.md:70).
 
 ### Good
 
 Human: How many objects do we have in this game in total?
-Assisant: * **2,477 unique spawnable objects**
+Assistant:
+
+* **2,477 unique spawnable objects**
 * 7,479 noun names if you include aliases/synonyms
 * 8,279 accepted strings if you include adjectives
