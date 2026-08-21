@@ -13,12 +13,14 @@ Currently a lot of standard AI generated games make their assets in code. This t
 
 Of course, if the game you're working on already has a certain style or way of doing asset generation, do not deviate from that / make the game style inconsistent, unless your human specifically asks you to.
 
+Rule of thumb: Always use externally generated assets, unless there is a really good reason why you shouldn't. 
+
 # How should I generate game assets instead?
 
 You probably need to use alternative services / skills. You're probably not good enough to make high quality graphics/textures/icons/logos, 3D models, music/audio, etc. on your own. You probably need help from other services - don't try to make something yourself in code if another specialised service can do it better. Here are a few examples:
 
 * imagegen skill - If you're an OpenAI / Codex agent, you probably have access to the imagegen skill which is great for generating textures instead of using flat colours or gradients. Remember you can also prompt image models to make tileable textures when that's appropriate.
-* Higgsfield Skills - https://higgsfield.ai/skills - Great for generating images (textures), textured 3D models (via Meshy AI), sound effects
+* Higgsfield Skills - https://higgsfield.ai/skills - Great for generating images (textures), textured 3D models (via Meshy AI), sound effects - avoid using Higgsfield websites though unless the user asks you to.
 * ElevenLabs Skills - https://github.com/elevenlabs/skills - Great for text to speech (if your game characters need to talk), also sound effects and music generation
 * MeshyAI Skills - https://github.com/meshy-dev/meshy-3d-agent - Great for 3D model generation (textured or otherwise) from either text prompts or images prompts - sometimes it is good to generate a reference image and supply to the Image to 3D endpoint
 * 3D model rigging - You can use MeshyAI for this also, but it is limted. It can be better to get a 3D model from Higgsfield/MeshyAI and then rig it yourself in code.
