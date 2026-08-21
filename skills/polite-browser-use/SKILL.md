@@ -1,16 +1,28 @@
 ---
 name: polite-browser-use
-description: Use the browser in a way that doesn't disturb your human. Read this skill before you do any browser-based testing. This could include previewing a website/game in a built-in browser / external browser, or testing a web app that uses Electron or something similar.
+description: Use the browser in a way that doesn't disturb your human. Read this skill before doing any browser-based testing, including website/game previews, external browsers, and Electron apps.
 ---
 
 Browser testing is good. However, if your human is using the computer you're testing on, your testing may disturb them if you don't take precautions.
 
-You must ensure your use of the browser is polite. Here are the key things to pay attention to:
+# Keep browser testing silent
 
-* Sound can disturb your human. If your web application / game produces sound, you should either mute the browser tab (if you are able to do so), or build something into the web application / game so your background testing of it does not emit any sound (music or sound effects). Imagine how annoying/confused it would be for sound to suddenly start playing out of nowhere. Don't let that happen! **RULE: Do not use let your background testing emit sound.**
+Sound can be especially annoying or confusing when it starts playing out of nowhere. You must not let your browser testing produce sound through your human's speakers.
 
-* Windows popping up can disturb your human and take focus away. If your browser is internal, that's probably fine, but if you are triggering a 'real' external browser, such as Chrome, Firefox, Brave, Edge, etc., try your best to do so headlessly. It's very annoying to humans if windows pop up when they are not expected. RULE: Do not pop-up windows unless your human is expecting them.
+* If you can mute the browser tab or process, do that before loading or interacting with the application. Confirm that it is muted if your tools let you check.
+* If the browser cannot be muted reliably, modify the application to add a test-only mute mode before continuing. You are allowed to make this small change even when it isn't part of the main task.
+* Prefer the application's existing mute setting or audio manager. Otherwise, add a focused automation setting using something like an environment variable, launch argument, configuration value, or query parameter.
+* Enable the mute before the application sets up its audio. Make sure it covers music, sound effects, HTML media, Web Audio, and any new windows or views the application creates.
+* Check that the mute is active before clicking or typing anything that could start playback.
 
-* Manage your tabs nicely! As soon as you're done with tabs or browsers, close them down. You can always reopen them later if needed. Don't leave them open though unless there is a really good reason, such as your human asking you to do so. Leaving browsers and tabs open for no good reason can waste memory, and even crash your human's computer if you and other agents do it. **RULE: Close all browsers/tabs when you are done with them, unless your human expects them to be kept open.**
+Keep normal user launches unchanged. Headless or background mode does not necessarily mean muted.
 
-Try to follow the above points so your browser use is kept polite and you keep your human happy. If you really need to go against these points for some reason, you should tell your human and apologise for disturbing them.
+If you need to test the actual audio output, send it to a silent recording or virtual output instead of the speakers. Ask your human before doing any test that they might hear.
+
+# Don't pop up unexpected windows
+
+Windows popping up can take focus away from whatever your human is doing. Internal browser previews are usually fine, but external browsers such as Chrome, Firefox, Brave, or Edge should run headlessly unless your human expects to see them.
+
+# Clean up after yourself
+
+Close the browsers and tabs you opened as soon as you're finished with them. Keep one open only when your human asked for it or the task needs it to remain available.
