@@ -12,7 +12,7 @@ Assuming your human has asked you to visually inspect and/or improve the look/gr
    * Game asset: it could be in different poses or at different angles, in different states, shown on different screens, or used by other characters/creatures
    * Text: it may be shown in different layouts or wrapped in different ways
 
-2. Take screenshots of the thing in as many ways as you think end users may see it. Take multiple screenshots. Do not use a contact sheet or grid. You can see things better in close-ups than in grids of multiple items.
+2. Take screenshots of the thing in as many ways as you think end users may see it. Take multiple screenshots. Do not use a contact sheet or grid. You can see things better in close-ups than in grids of multiple items. Try to take the screenshots close-up and focused on the thing you're trying to improve.
 
 3. Look at all the screenshots you have captured of the thing in question. Carefully consider what looks good and what looks bad. Be very critical, but also take into account any specific styling or general requests from your human if they have provided any.
 
