@@ -30,3 +30,7 @@ You probably need to use alternative services or skills. You're probably not goo
 See what relevant services/skills you have available in your environment and use what you can. There are also plenty of other services available online other than those listed above, so feel free to search for others online if needed.
 
 Try to use these kinds of services without bothering the user. However, if you can't manage to do this, you should consider asking the user if you can use one or more of these services (and get their help setting one or more up in your environment), rather than potentially producing a worse game.
+
+# Self Review
+
+As you are working, and before you hand over to the user, check your changes and make ensure you have not gone against the guidance in this document. If you have make the necessary changes before handing the results over to your human.
