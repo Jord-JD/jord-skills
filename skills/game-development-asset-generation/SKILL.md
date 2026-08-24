@@ -23,6 +23,7 @@ You probably need to use alternative services or skills. You're probably not goo
 * Higgsfield Skills - https://higgsfield.ai/skills - Great for generating images (textures), textured 3D models (via Meshy AI), sound effects (Note: avoid using the Higgsfield websites skill and do not publish games to Higgsfields at all unless the user specifically asks you to)
 * ElevenLabs Skills - https://github.com/elevenlabs/skills - Great for text-to-speech (if your game characters need to talk), also sound effects and music generation
 * MeshyAI Skills - https://github.com/meshy-dev/meshy-3d-agent - Great for 3D model generation (textured or otherwise) from either text prompts or image prompts - sometimes it is good to generate a reference image and supply it to the image-to-3D endpoint
+* Blender - Use Blender (install it if necessary) and use its headless Python interpreter to make 3D models entirely yourself for free. Useful if you need something entirely bespoke and matching very specific requirements.
 * 3D model rigging - You can use MeshyAI for this also, but it is limited. It can be better to get a 3D model from Higgsfield/MeshyAI and then rig it yourself in code.
 * 3D model animation - MeshyAI can do this, but again it is limited. If you rig the 3D models yourself, you can also animate them yourself.
 
