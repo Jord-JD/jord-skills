@@ -33,4 +33,4 @@ Try to use these kinds of services without bothering the user. However, if you c
 
 # Self Review
 
-As you are working, and before you hand over to the user, check your changes and make ensure you have not gone against the guidance in this document. If you have make the necessary changes before handing the results over to your human.
+As you are working, and before you hand over to the user, check your changes and ensure you have not gone against the guidance in this document. If you have, make the necessary changes before handing the results over to your human.
