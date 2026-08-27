@@ -91,6 +91,8 @@ Examples:
 * For a bakery's about page, read about pages from real bakeries.
 * For game tutorials, quests, hints, or story content, find examples from games in the same genre. Check official material, gameplay footage, transcripts, and well-maintained wikis.
 * For interface copy, inspect screenshots and real flows from comparable software. Pay attention to buttons, errors, confirmations, empty states, and onboarding text.
+* For fiction, read excerpts from published work in the same genre and written for a similar audience. Study the narration, dialogue, vocabulary, pacing, and character introductions.
+* For READMEs and documentation, inspect projects with a similar purpose. Note how they introduce the project, order the setup steps, explain prerequisites, and present examples.
 
 # Before you send it
 
