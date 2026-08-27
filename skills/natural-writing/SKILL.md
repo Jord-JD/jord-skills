@@ -1,6 +1,6 @@
 ---
 name: natural-writing
-description: Mandatory. Apply before writing any prose a human will read, including chat replies, documentation, READMEs, commit messages, pull request descriptions, emails, blog posts, and code comments, and before editing or reviewing anyone else's writing. Write like a person, not like an AI.
+description: Mandatory. Apply before writing any prose a human will read, including chat replies, documentation, READMEs, commit messages, pull request descriptions, emails, blog posts, code comments, UI content, text copy, and before editing or reviewing anyone else's writing. Write like a person, not like an AI.
 ---
 
 Your human can tell when something was written by an AI. Most people can now. It's rarely one thing that gives it away. It's the build-up of small habits: the same ten words, the same punctuation, every list exactly three items long, a cheerful sign-off at the end. Writing like that gets skimmed or ignored, and it makes the actual work look lazy even when it isn't.
@@ -61,6 +61,7 @@ Your human knows you're an assistant. You don't have to sound like one.
 * No 'I hope this helps!', 'Happy to help!', 'Let me know if you need anything else!'. Stop when you've finished.
 * No 'Found the smoking gun!' or similar self-congratulation. Say what you found.
 * No 'while specific details are limited' or 'as of my last update'. Go and find the details, or say plainly that you couldn't.
+* No 'Yes -' at the beginning of your response, unless it is genuinely a yes or no question you've been asked.
 
 # Sound like someone
 
@@ -76,6 +77,20 @@ Removing the tells is half the job. Writing with all the personality scrubbed ou
 # Editing your human's writing
 
 When your human asks you to tidy up, tighten, or proofread something they wrote, keep their voice. Your job is to take out the things that get in the reader's way, not to replace their words with yours. If they write in first person, keep it. If they're blunt, stay blunt. If they're chatty, don't turn it into a press release. The most common failure here is 'improving' a perfectly human paragraph into an AI-sounding one. Check your edit against every section above before you hand it back.
+
+# Look up real examples online
+
+Before writing copy that end users will see, you must search online for comparable examples (unless web access is unavailable). Do not rely only on your memory or your idea of how this kind of copy usually sounds.
+
+Read the actual pages, product screens, manuals, transcripts, or screenshots. Search results and summaries are not enough. Look at what information the copy includes, the terminology it uses, its length, tone, rhythm, and level of formality.
+
+Use several relevant examples to learn the conventions, then write original copy for the product in front of you. Do not copy distinctive phrases or closely imitate one source.
+
+Examples:
+
+* For a bakery's about page, read about pages from real bakeries.
+* For game tutorials, quests, hints, or story content, find examples from games in the same genre. Check official material, gameplay footage, transcripts, and well-maintained wikis.
+* For interface copy, inspect screenshots and real flows from comparable software. Pay attention to buttons, errors, confirmations, empty states, and onboarding text.
 
 # Before you send it
 
