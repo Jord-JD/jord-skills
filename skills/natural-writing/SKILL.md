@@ -80,7 +80,7 @@ When your human asks you to tidy up, tighten, or proofread something they wrote,
 
 # Look up real examples online
 
-Before writing copy that end users will see, you must search online for comparable examples (unless web access is unavailable). Do not rely only on your memory or your idea of how this kind of copy usually sounds.
+If the prose will be published, shipped in a product, or used as documentation, you must search online for comparable examples (unless web access is unavailable). Do not rely only on your memory or your idea of how this kind of copy usually sounds.
 
 Read the actual pages, product screens, manuals, transcripts, or screenshots. Search results and summaries are not enough. Look at what information the copy includes, the terminology it uses, its length, tone, rhythm, and level of formality.
 
