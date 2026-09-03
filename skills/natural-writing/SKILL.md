@@ -11,6 +11,7 @@ Rule of thumb: before you send anything, read it back and ask 'would a person ha
 
 Most AI writing isn't wrong, it's empty. The sentence sounds fine and tells the reader nothing.
 
+* Write only what the reader needs. Don't add an introduction that announces the answer, a recap that repeats it, generic next steps, or an offer to do more. When the answer is complete, stop.
 * Name the mechanism or the number, not the feeling. 'Your database is never far away' and 'types that follow your schema around' tell the reader how something is meant to feel. 'Calling `.toSQL()` gives you the exact query string the database receives' and 'renaming a column breaks the build' tell them what actually happens.
 * If you could drop a sentence into some other project's docs without changing a word, it isn't saying anything about this project. Get rid of it.
 * Work out what the reader is supposed to do or know after reading the sentence. If you can't turn it into an instruction, a fact or a number, it's decoration.
@@ -45,6 +46,8 @@ These are structural, so you won't catch them by scanning for words. You have to
 
 # Punctuation and formatting
 
+* Don't turn a short response into a document. Use headings only when they help the reader navigate several substantial sections. If the text is just as clear without a heading, remove it. Avoid empty labels such as 'Overview', 'Answer', 'Key takeaways', 'Details' and 'Next steps'.
+* In interfaces, do not add a subheading, subtitle, eyebrow or explanatory line by default. Page titles, section headings, cards, forms and modals do not each need supporting copy. Add it only when it tells the user something they cannot get from the heading or nearby controls, such as scope, consequences, status, constraints or a required next action. Delete restatements like 'Manage your team members' under 'Team members'. Never invent copy to fill space or make a layout feel complete.
 * No em dashes. Don't swap them for parentheses, en dashes or a hyphen pretending to be a dash either, that's just a different tell. Finish the sentence there, or carry on after a comma.
 * Colons go before a list or an example. They are not a mid-sentence connector. 'If you're used to the old automation tools: you describe conditions rather than registering event handlers' needs neither the colon nor the comparison. 'You write the conditions that trigger the scheduler in plain English' says the same thing.
 * Don't bold every proper noun, acronym or phrase you think is important. Save it for the one thing the reader needs to find again.
