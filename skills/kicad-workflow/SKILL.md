@@ -22,14 +22,16 @@ For substantial work, prefer this order:
 
 Do not turn a coherent schematic or PCB operation into a long sequence of opaque mouse clicks or granular MCP mutations when it can be represented in durable scripts or project files. The `.kicad_pro`, `.kicad_sch`, and `.kicad_pcb` files remain legitimate project artefacts; do not rebuild an existing project from scratch just to make it script-generated.
 
-## Detect the installed KiCad before choosing an API
+## Find and use the latest local KiCad before choosing an API
 
-Start by checking the actual environment rather than assuming a KiCad release:
+Check all KiCad installations on `PATH`, system installation locations, and system/user package managers. Always search the entire home directory recursively for AppImages and portable installations, including hidden and ignored folders, even after finding a working installation. On Linux:
 
 ```bash
-kicad-cli --version
-kicad-cli --help
+rg --files --hidden --no-ignore \
+  --iglob '*kicad*.appimage' --iglob 'kicad-cli' "$HOME"
 ```
+
+Check user-supplied paths and known symlinked installation directories too. Query each distinct installation's actual version using its CLI or supported launcher; do not infer it from filenames. Compare versions numerically, including prerelease ordering, and use the newest available locally. Report discovery or launch failures instead of silently falling back to an older version.
 
 Use subcommand-specific `--help` before relying on syntax that may differ between KiCad versions.
 
@@ -250,7 +252,7 @@ Verify that the requested files were actually written and correspond to the fina
 
 Before handing KiCad work back to the human:
 
-- confirm the correct project and KiCad version were used;
+- confirm the correct project and latest locally available KiCad version were used after checking both system and user installations;
 - confirm important component pinouts, packages, footprints, and layout requirements came from reliable sources;
 - rerun ERC and resolve or deliberately justify remaining findings;
 - confirm the PCB is synchronised with the schematic;
