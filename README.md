@@ -20,16 +20,30 @@ A collection of [Agent Skills](https://agentskills.io/) I've made. Each skill li
 
 ## Install skills
 
-Install all skills globally so they are available across your projects:
+### Codex + Claude Code
+
+Install all skills globally for both Codex and Claude Code, without prompts:
+
+```bash
+npx skills add Jord-JD/jord-skills -g -s '*' -a codex claude-code -y
+```
+
+This installs the skills at user level so they are available across all projects. The `-a` flag restricts the install to Codex and Claude Code; `--all` is deliberately not used because it targets every supported agent.
+
+### Interactive install
+
+To choose skills and agents interactively while still installing globally:
 
 ```bash
 npx skills add Jord-JD/jord-skills -g
 ```
 
-To install one skill globally:
+### Install one skill
+
+For example, to install only `natural-writing` globally for Codex and Claude Code:
 
 ```bash
-npx skills add Jord-JD/jord-skills --skill natural-writing -g
+npx skills add Jord-JD/jord-skills -g -s natural-writing -a codex claude-code -y
 ```
 
 These commands use the [skills CLI](https://github.com/vercel-labs/skills). Omit `-g` to install into the current project instead.
