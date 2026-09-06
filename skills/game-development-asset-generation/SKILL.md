@@ -3,6 +3,12 @@ name: game-development-asset-generation
 description: Agent advice for generating assets for game development projects. Use this skill when you're doing game development and might need to generate images, textures, 3D models, sound effects, music, etc. for the game you're working on. Use it even if you're just planning to do one of these things.
 ---
 
+# Finish the game's assets in the first turn
+
+Support delivery of the full requested game in the first turn, with AAA-level visual and audio quality as the target. Plan and produce assets for all requested content and player-facing states. Do not stop at assets for a showcase scene or defer animation, sound, music, or the remaining levels to a follow-up prompt. Follow an explicit request for a prototype or individual asset when that is the task.
+
+Start asset production early enough to integrate, inspect, and revise the results during development. Keep perspective, scale, palette, materials, lighting, and animation consistent across the game. Inspect assets at their actual gameplay size and in motion; check animation transitions, transparency, texture seams, and audio loops where relevant. Replace temporary stand-ins before delivery. A generated file is only finished when it works well in the game.
+
 # When should you generate assets?
 
 Currently, a lot of standard AI-generated games make their assets in code. This typically makes games that look quite bland, flat and similar to one another.

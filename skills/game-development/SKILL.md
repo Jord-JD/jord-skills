@@ -1,6 +1,6 @@
 ---
 name: game-development
-description: Read before creating or changing any game or game feature, in any engine or framework, including Godot, Unity, Unreal, Phaser, PixiJS, Three.js, Bevy, pygame, LÖVE, Roblox, and plain canvas or WebGL. Applies to prototypes, jam games, web games, and full projects. Covers working out what the game is, building a proper game loop, making controls feel good, producing real art and sound, testing by actually playing, and building in an order that keeps the game playable.
+description: Read before creating or changing any game or game feature, in any engine or framework, including Godot, Unity, Unreal, Phaser, PixiJS, Three.js, Bevy, pygame, LÖVE, Roblox, and plain canvas or WebGL. Applies to prototypes, jam games, web games, and full projects. Defaults to delivering the full requested game in the first turn with AAA-level quality as the target. Covers working out what the game is, building a proper game loop, making controls feel good, producing real art and sound, testing by actually playing, and building in an order that keeps the game playable.
 ---
 
 Most games made by agents are playable in the loosest sense. The loop runs, the character moves, and nobody wants to play it twice. The tells are always the same: assets drawn in code, a jump that feels like a lift, no feedback when anything happens, tinny beeps from an oscillator, a HUD that looks like a form, and a hand-off message that says "the game is complete" when nobody, including the agent, has played it.
@@ -8,6 +8,16 @@ Most games made by agents are playable in the loosest sense. The loop runs, the 
 This skill is about avoiding that. It is engine-neutral. The engine's own documentation and any engine-specific skills you have tell you the API. This tells you what to do with it.
 
 Rule of thumb: don't tell your human a game or feature works until you have played it and looked at it.
+
+# Deliver the complete game in the first turn
+
+Aim to deliver a full, complete, high-quality AAA game in the first turn, with the user's brief defining the game. Treat AAA-level craft as the target for controls, art direction, animation, sound, level design, pacing, interface, performance, and completeness. A request for a small game still calls for a finished experience. Follow an explicit request for a prototype or a narrow feature, but never assume the user wants either because the work is substantial.
+
+The first turn includes the research, implementation, asset production, playtesting, and revisions needed to finish. Keep working through those steps before the final response. Do not hand over a vertical slice, demo, scaffold, or roadmap in place of the requested game, and do not wait for another prompt to add the remaining content or polish. Make routine creative and technical decisions yourself within the brief.
+
+Track every requested mechanic, mode, level, and player-facing state through implementation and verification. Temporary placeholders are internal development aids and must be replaced before delivery. Integrate finished art, animation, audio, and feedback throughout development. Do not reserve them for a future polish pass.
+
+Use the quality target to guide the work, then describe the delivered result honestly. If an actual tool, access, or execution limit blocks completion, exhaust available alternatives, complete unaffected work, and state exactly what remains blocked. Do not pre-emptively shrink the brief because it sounds ambitious or label an incomplete result AAA.
 
 # Skills to read alongside this one
 
@@ -40,7 +50,7 @@ Write down, in a few lines, what the game is. Not a design document. Just enough
 
 Then research. You probably can't play other games or watch footage of them, so look at what other people have recorded about them. For at least three games that do the same thing, read official pages, store listings, guides, wikis, fandom pages, reviews, and forum threads, and open the screenshots on those pages. Wikis are especially useful because they document mechanics with numbers: jump heights, invincibility frames, enemy health, wave timings, and the controls list. Look at how the games teach the verb, how quickly the first threat arrives, how the HUD reads in action screenshots, and what their menus look like on a controller. Every screenshot you find or capture must be opened and looked at, not just listed. Note what to keep, adapt, and avoid, then design something original for this game. Follow the research process in `research-backed-frontend-development`.
 
-For anything bigger than a small change, build a vertical slice first: one level or arena, the primary verb, one enemy or obstacle, win and fail states, with placeholder art. Play it. Decide whether the verb is fun on its own. If the verb only feels good after you explain it, change the verb, not the tutorial.
+Plan the complete game before implementation, including its content, progression, ending or repeatable loop, menus, settings, and recovery from failure as appropriate to the brief. Implement and test the primary verb early, then keep building and refining the full game in the same turn. Use playtesting to improve the mechanic and its teaching while preserving the user's requested design.
 
 # Build the loop properly
 
@@ -121,8 +131,9 @@ Before any browser or preview session, apply `polite-browser-use`. Mute the tab 
 
 Agents build in the wrong order. A menu system, an inventory, a dialogue tree, and a crafting system, and no one has confirmed the jump feels good.
 
-* Prove the core verb first, with placeholder art, before adding a second system.
-* Build everything your human asked for, but in an order where the game is playable early and stays playable. Get the primary verb, one level or mode, win and fail, and restart working first, then add the remaining systems, levels, and content one at a time, playing after each. If you can't finish everything within the task, say exactly what is missing rather than quietly shrinking the brief.
+* Organise implementation around dependencies while keeping the full deliverable in view. Get input and the core loop working early, integrate production assets and feedback as systems become playable, and test throughout. Internal implementation checkpoints are not hand-off milestones.
+* Complete every requested system, level, mode, and content set in the same turn. Play through progression and transitions as well as individual mechanics. Fix weak presentation, pacing, and feedback before handing over; do not offer to add them later.
+* Before the final response, reconcile the implemented game against the full brief and resolve every remaining actionable gap. A working opening level or an attractive screenshot does not establish that the game is complete.
 
 # Writing in the game
 
@@ -132,8 +143,9 @@ Player-facing text is part of the game, and the flowery, over-explained tutorial
 
 Before handing over, check the work against this file. In particular:
 
+* You completed the full requested game or feature in this turn, including its content and presentation, rather than stopping at an internal checkpoint. Any remaining gap has a concrete blocker.
 * You detected the engine and version and used its conventions, and you didn't migrate anything without being asked.
-* You can say in a sentence what the primary verb is and why it should be fun, and you played a slice that tested it.
+* You can say in a sentence what the primary verb is and why it should be fun, and you tested it throughout the complete game.
 * You researched comparable games and looked at the screenshots you took.
 * The simulation runs on a fixed step, movement is delta-scaled, gameplay randomness is seeded, and input goes through named actions.
 * Feedback exists for the important events, with values you tuned by playing, and everything returns to rest.
@@ -169,7 +181,7 @@ The assistant writes one HTML file with a canvas, draws the ship as a triangle a
 
 ### Good
 
-The assistant writes down the brief: the verb is dodging and shooting, the feel is fast and arcade, the pressure is escalating waves, the reward is score and a new weapon. It reads the wiki and store pages for three space shooters, opens their screenshots, and notes how they signal incoming fire, how their HUD sits over the playfield, and what the first wave looks like. It picks Phaser, sets up a fixed step with seeded spawns, named input actions for keyboard and touch, and a state and step hook for testing. It builds a vertical slice with rectangles, plays it, and finds the ship turns too slowly. It fixes that, then generates a ship, three enemies, a tileable starfield, shot and explosion effects, and a short loop of music using the tools from `game-development-asset-generation`, all from one style prompt. It adds shake, hit-stop on the boss hit, and a pitch-varied hit sound. With the first wave feeling right, it adds the rest of the game: escalating waves, the weapon pickup, a boss, a title screen, pause, game over with restart, and a high score that persists. It plays through the whole thing with a script with the tab muted, opens the screenshots, sees the score is unreadable over the starfield, and adds a backing panel. The hand-off lists what was played, the screenshots, and that touch works but wasn't tested on a real phone.
+The assistant writes down the brief: the verb is dodging and shooting, the feel is fast and arcade, the pressure is escalating waves, the reward is score and a new weapon. It reads the wiki and store pages for three space shooters, opens their screenshots, and notes how they signal incoming fire, how their HUD sits over the playfield, and what the first wave looks like. It picks Phaser, sets up a fixed step with seeded spawns, named input actions for keyboard and touch, and a state and step hook for testing. It implements the controls and combat, plays them, and fixes slow ship turning while building the full game. It generates a ship, three enemies, a tileable starfield, shot and explosion effects, and a short loop of music using the tools from `game-development-asset-generation`, all from one style prompt. It adds shake, hit-stop on the boss hit, and a pitch-varied hit sound. In the same turn, it completes escalating waves, the weapon pickup, a boss, a title screen, pause, game over with restart, and a high score that persists. It plays through the whole thing with a script with the tab muted, opens the screenshots, sees the score is unreadable over the starfield, and adds a backing panel. It checks the whole brief, replaces every temporary asset, and replays the finished game after fixes. The first-turn hand-off delivers the playable game, lists what was played and the screenshots, and notes that touch works in emulation but was not tested on a real phone.
 
 ## Example 3 - Reporting on a game feature
 
