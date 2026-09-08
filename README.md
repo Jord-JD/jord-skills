@@ -17,6 +17,7 @@ A collection of [Agent Skills](https://agentskills.io/) I've made. Each skill li
 | [`polite-browser-use`](skills/polite-browser-use/SKILL.md) | Makes browser and Electron testing quiet and unobtrusive. It requires muted audio, avoids unexpected visible windows, and cleans up tabs, processes, and test servers when the work is done. |
 | [`research-backed-frontend-development`](skills/research-backed-frontend-development/SKILL.md) | Applies research-led design and visual QA to any UI, including websites, apps, games, kiosks, and embedded-device displays. It sets a high visual-quality bar while accounting for target-specific controls, display constraints, implementation, and verification. |
 | [`small-tasks-small-answers`](skills/small-tasks-small-answers/SKILL.md) | Keeps responses proportionate to straightforward requests such as small edits, simple calculations, server starts, and commit-and-push tasks. |
+| [`view-video`](skills/view-video/SKILL.md) | Downloads videos with yt-dlp, extracts timestamped frames with FFmpeg, reads subtitles, and requires actual image inspection. Supports focused follow-ups, original timeline offsets, and optional local transcription. |
 | [`visual-inspection-improvement`](skills/visual-inspection-improvement/SKILL.md) | Provides an iterative visual QA process: capture the relevant user-facing states, inspect them closely, make improvements, and repeat until the visible problems are gone. |
 
 ## Install skills
