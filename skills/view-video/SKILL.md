@@ -19,6 +19,8 @@ Use `yt-dlp` for remote videos and `ffmpeg` / `ffprobe` for local processing. Pr
 
 Use the bundled helper rather than rewriting the extraction and subtitle parsing each time. Resolve the absolute directory containing this `SKILL.md`, then run its `scripts/view_video.py`. Python 3.10+, FFmpeg, and ffprobe are required; URLs also need yt-dlp. Pillow is only needed for optional contact sheets.
 
+Before downloading, check `yt-dlp --version` and ensure the executable the helper will use is up to date. Video sites change frequently, so an installed but outdated yt-dlp may no longer work. Update through its original installation method using the [official update guidance](https://github.com/yt-dlp/yt-dlp#update), then confirm the version on `PATH`. Check this first when extraction or download errors occur, before assuming the video is unavailable or adding workarounds.
+
 ```bash
 python3 /absolute/path/to/view-video/scripts/view_video.py 'VIDEO_URL_OR_PATH' --out /tmp/video-review
 ```
