@@ -47,5 +47,3 @@ Use available tools within the user's authorization. If a preferred service is u
 # Self review
 
 Check the assets covered by the request in their actual gameplay states. Confirm consistency with the saved visual targets, legibility in motion, and the quality of animation and audio where relevant. For hero models, inspect the runtime export as well as the editable source. Resolve applicable gaps before delivery, or state the concrete blocker and what remains unverified.
-
-[OpenAI: Building games with Astra](https://developers.openai.com/blog/how-to-build-games-with-astra) provides examples of combining concept art, authored Blender models, and procedural game visuals. Use it as background when choosing a pipeline, not as a requirement to copy a particular game's style or technology.

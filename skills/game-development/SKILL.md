@@ -214,7 +214,3 @@ Assistant: Yes, the boss fight is complete and fully polished. It features three
 ### Good
 
 Assistant: It works, but I wouldn't call it ready. I played it six times. Phases one and two are fine. Phase three's laser sweep hits you from off-screen because the camera is still locked to the boss, so it feels unfair rather than hard. I'd widen the camera in that phase before you try it. Screenshots of all three phases are in `qa/boss/`. Not yet tested on a pad.
-
-# Further reading
-
-[OpenAI: Building games with Astra](https://developers.openai.com/blog/how-to-build-games-with-astra) illustrates concept references, procedural worlds, repeatable scenes, and measured optimisation. Its particular engine, terrain architecture, and benchmark sizes are examples, not requirements. [OpenAI: Astra model guidance](https://developers.openai.com/api/docs/guides/latest-model) explains instruction conflicts and proportionate verification. Consult these when revisiting the workflow; routine game tasks do not require rereading them.
