@@ -3,7 +3,7 @@ name: game-development
 description: Read before creating or changing any game or game feature, in any engine or framework, including Godot, Unity, Unreal, Phaser, PixiJS, Three.js, Bevy, pygame, LÖVE, Roblox, and plain canvas or WebGL. Applies to prototypes, jam games, web games, and full projects. Defaults to delivering the full requested game in the first turn with AAA-level quality as the target. Covers working out what the game is, building a proper game loop, making controls feel good, producing real art and sound, testing by actually playing, and building in an order that keeps the game playable.
 ---
 
-Most games made by agents are playable in the loosest sense. The loop runs, the character moves, and nobody wants to play it twice. The tells are always the same: assets drawn in code, a jump that feels like a lift, no feedback when anything happens, tinny beeps from an oscillator, a HUD that looks like a form, and a hand-off message that says "the game is complete" when nobody, including the agent, has played it.
+Most games made by agents are playable in the loosest sense. The loop runs, the character moves, and nobody wants to play it twice. The tells are always the same: generic placeholder art, a jump that feels like a lift, no feedback when anything happens, tinny beeps from an oscillator, a HUD that looks like a form, and a hand-off message that says "the game is complete" when nobody, including the agent, has played it.
 
 This skill is about avoiding that. It is engine-neutral. The engine's own documentation and any engine-specific skills you have tell you the API. This tells you what to do with it.
 
@@ -23,7 +23,7 @@ Use the quality target to guide the work, then describe the delivered result hon
 
 Read these when they are available. They cover parts of game work in more depth than this file does.
 
-* `game-development-asset-generation` before making any image, texture, sprite, model, sound effect, music, or voice. It explains why code-drawn assets look bad and which services to use instead.
+* `game-development-asset-generation` before making any image, texture, sprite, model, sound effect, music, or voice. It explains how to choose generated, authored, or procedural assets to fit the art direction.
 * `research-backed-frontend-development` for menus, HUDs, inventories, settings screens, and any other interface, and for the research step below. Its section on researching comparable interfaces applies to game screenshots and wikis as much as websites.
 * `view-video` when researching gameplay footage or reviewing a recording of the game. Extract timestamped frames, actually inspect them, and read any relevant subtitles. Inspect short sequences more densely when movement, pacing, or feedback matters.
 * `visual-inspection-improvement` whenever you are judging how the game looks. Take close-up screenshots of real states, look at each one, fix, and repeat.
@@ -49,7 +49,9 @@ Write down, in a few lines, what the game is. Not a design document. Just enough
 * The first minute. A title screen or main menu is fine and most games have one, but it should be short and lead straight into play. Do not open with a web-style landing page, a wall of instructions, or a settings screen. Once play starts, the player should be doing the primary verb within a few seconds, and the first minute should contain at least one real decision and one reward or feedback moment.
 * What is out of scope. Write this down so you don't drift into it.
 
-Then research at least three games that do the same thing. Read official pages, store listings, guides, wikis, fandom pages, reviews, and forum threads, and open the screenshots on those pages. Use `view-video` to inspect relevant gameplay footage, such as developer demonstrations and player playthroughs. Prefer footage showing ordinary play when studying mechanics and pacing; a promotional montage may omit the transitions and downtime that matter. If footage is inaccessible, use the available screenshots and written sources and state the gap.
+Then research in proportion to the task. For a new game or substantially new flow, inspect at least three relevant games. For a small feature or visual change, inspect the existing game first; one or two focused references may be enough. Reuse relevant research already recorded in the project. For a narrow technical fix that leaves design unchanged, focus on the reproduction and applicable engine documentation instead of repeating design research.
+
+Read official pages, store listings, guides, wikis, fandom pages, reviews, and forum threads, and open the screenshots on those pages. Use `view-video` to inspect relevant gameplay footage, such as developer demonstrations and player playthroughs. Prefer footage showing ordinary play when studying mechanics and pacing; a promotional montage may omit the transitions and downtime that matter. If footage is inaccessible, use the available screenshots and written sources and state the gap.
 
 Look at how the games teach the verb, how quickly the first threat arrives, how movement and feedback unfold, how the HUD reads during action, and how their menus work on a controller. Keep source URLs and timestamps for useful observations, and inspect a denser sequence around important moments. Do not infer exact timing or input responsiveness from sparse stills. Wikis are especially useful because they document mechanics with numbers: jump heights, invincibility frames, enemy health, wave timings, and the controls list. Every screenshot you find or capture must be opened and looked at, not just listed. Note what to keep, adapt, and avoid, then design something original for this game. Follow the research process in `research-backed-frontend-development`.
 
@@ -69,6 +71,14 @@ The most common technical faults in agent-made games come from the loop.
 * Emit events from gameplay (`hit`, `landed`, `picked_up`, `died`) and have the HUD, audio, particles, and camera subscribe. Do not poll health every frame from the UI and do not put a sound call in the middle of collision code.
 * Handle pause, focus loss, tab visibility, resize, and orientation change. A browser game that keeps simulating in a hidden tab and then applies ten seconds of delta on return is broken. Audio in browsers needs a user gesture before it can start, so start it from the first click or key press.
 * Start with a state machine for entities and screens. Reach for an entity component system only when you have thousands of entities and profiling says you need it.
+
+# Keep procedural worlds consistent
+
+Apply these rules when terrain, water, or other generated environments affect gameplay; a small fixed level does not need a streaming system.
+
+* Derive visible surfaces, collision, and hazards from the same seeded data and simulation time. For moving water, the surface and buoyancy should agree. For terrain, validate that rendered ground and contact geometry describe the same location and generation.
+* Treat readiness as a contract. A traversable patch is ready only when its visuals, collision, and relevant hazards are ready together. Keep coarse terrain or the previous tile visible until its replacement is ready; do not remove coverage merely because generation has started.
+* Test transitions as well as steady states, including delayed generation and rapid changes of direction. Check for holes, falling through visible ground, stale collision, and abrupt changes between levels of detail. Choose streaming and refinement machinery only when the world's scale requires it.
 
 # Make it feel good
 
@@ -101,23 +111,28 @@ Add accessibility options from the start rather than retrofitting them: a screen
 
 Art, sound, and interface are where agent-made games most often fall apart, because they are the parts the agent is least equipped to do alone.
 
-* Read `game-development-asset-generation` and use it. Textured sprites and models from an image or 3D generator, or from Blender, beat rectangles with gradients every time. Write down the art direction in a sentence first (palette, era, material, mood) so every generated asset comes from the same world, and reuse the same style prompt for all of them.
+* Read `game-development-asset-generation` and use it. Choose authored models, generated images, procedural geometry, shaders, or a combination to match the game. Write down the palette, materials, mood, and shape language. For a new visual direction, save concept images for important gameplay states and compare actual gameplay captures against them. Follow the asset skill for hero-model views and runtime preparation. Reject generic stand-ins regardless of how they were made.
 * Check that characters and threats read at the size they appear on screen, in motion, against the actual background. Distinct silhouettes matter more than detail. If the player can't tell the enemy from the scenery in a screenshot, redo it.
 * When you load a spritesheet, open the file and measure the frame size, margin, and spacing. Do not assume. Wrong frame sizes are the usual cause of sprites that flicker or show slivers of the neighbouring frame.
 * Build menus and the HUD with anchors and containers, never absolute pixel positions, so they survive resizing and different aspect ratios. Respect the platform's safe area. Give every screen a focused element on open so a controller can drive it, and keep the screens as a stack so back always works. Follow `research-backed-frontend-development` for the rest, and treat the HUD as an interface someone reads at speed while something is trying to kill them.
 * Route audio through buses (master, music, sound effects, ambience, user interface, voice), and convert slider values to decibels instead of multiplying the volume linearly, or quiet settings will sound almost as loud as full. Duck the music slightly under important effects and dialogue. Free one-shot players when they finish, or pool them.
-* Generate sound effects and music with a proper service or from real samples. A Web Audio oscillator is a placeholder. Keep the overall mix from clipping and roughly consistent in loudness between tracks.
+* Use generated audio, real samples, or deliberate synthesis suited to the game. Untuned oscillator beeps are placeholders; procedural audio must meet the same standard for variation, feedback, and mix. Keep the overall mix from clipping and roughly consistent in loudness between tracks.
 
 # Play it before you say it works
 
 The game is not done because it compiles or because the tests pass. You must play it.
 
+Scope verification to the change. For a new game, cover the requested experience; for a feature or fix, play the affected interactions and relevant regressions. Reuse the existing harness. Do not add tests that merely repeat implementation details or rerun unrelated suites after relevant checks pass. Broaden testing when a failure, shared-system change, or unresolved concern justifies it.
+
 * Make the game drivable from a script. For a web game, expose a function that advances the simulation by a given number of milliseconds in fixed steps, and a function that returns the current game state as compact text or JSON, including the mode, player position and velocity, entities, score, timers, and a note on the coordinate system. For engine projects, use the engine's headless mode, test runner, or an in-game debug console that accepts the same actions. This is what makes automated play reproducible instead of flaky.
+* Add named, repeatable starting scenes for difficult-to-reach states as needed. Save the seed, starting state, and camera. Expose readiness signals so tests wait for required assets and collision with a bounded timeout rather than an arbitrary sleep. Include useful rendering and streaming counters, such as draw calls, triangles, queued jobs, discarded jobs, and buffer sizes, where those systems exist.
+* Keep scene inspection separate from journey tests. Loading a landing scene can test its appearance, but cannot prove landing works. Use real controls to reach it from flight, then verify position and mode transitions, collision, and subsequent actions such as walking or taking off. Reproduce a problem, inspect both state and screenshots, trace the code, change it, and rerun the same scenario.
 * Drive real inputs through the real input path. Do not call the jump function directly and call that a test of jumping.
 * Test causal chains, not single inputs. Shooting an enemy lowers its health, at zero it disappears and the score changes, collecting the key opens the door. Reset the game between scenarios. Change one thing at a time.
 * Take screenshots during play at the moments that matter: the first screen, the busiest moment of combat, the pause menu, the game over screen, the moment after a big hit. Open each one and look at it. Check that the canvas is not blank or almost black, that the HUD is readable over the busiest background, and that effects have returned to rest. Do this at a desktop size and a phone size if the game targets both. Follow `visual-inspection-improvement` for the loop.
 * Read the console, engine output, and logs after every session. Fix the first new error before doing anything else.
 * Measure performance instead of guessing. A 60 Hz game has 16.7 ms per frame. Profile a release build on the weakest target you can get, look at whether the CPU or the GPU is the bottleneck, and only then optimise. Avoid allocating inside the hot loop and pool objects that spawn often, such as bullets and particles. Batch draws with atlases and instancing. Do not add a quadtree because it seems like a game should have one.
+* For performance changes, compare the same scene, seed, input sequence, quality settings, and measurement window before and after. Record warm-up conditions, sample count, average and percentile frame intervals, and relevant resource counters. Include device, browser or engine version, renderer backend, and whether rendering uses hardware or software. Software-rendered headless timings support comparisons in that environment, not claims about a player's GPU frame rate. Counters do not measure shader execution time. Check appearance and controls again after optimisation.
 * Play it as a new player would. Can you do the primary verb on purpose within thirty seconds without being told? Did you want to go again after failing? If the honest answer is no, work out why, change it, and play again. Keep iterating on your own until the answer is yes, and only bring it to your human if the fix would change what they asked for. Do not describe the game as fun, polished, or satisfying unless you can point at what you played that makes it so.
 * Keep debug overlays, god mode, and level skips behind a flag that is off in normal builds.
 
@@ -144,21 +159,23 @@ Player-facing text is part of the game, and the flowery, over-explained tutorial
 
 # Self review
 
-Before handing over, check the work against this file. In particular:
+Before handing over, check the requirements below that apply to the requested game, feature, or fix. Do not expand a narrow task to satisfy unrelated checklist items:
 
 * You completed the full requested game or feature in this turn, including its content and presentation, rather than stopping at an internal checkpoint. Any remaining gap has a concrete blocker.
 * You detected the engine and version and used its conventions, and you didn't migrate anything without being asked.
-* You can say in a sentence what the primary verb is and why it should be fun, and you tested it throughout the complete game.
-* You researched comparable games and looked at the screenshots you took.
+* You can say in a sentence what the primary verb is and why it should be fun, and you tested it across the requested experience or affected interactions.
+* You used research appropriate to the change and inspected the screenshots used as evidence, including comparisons with saved concepts when establishing a new visual direction.
 * The simulation runs on a fixed step, movement is delta-scaled, gameplay randomness is seeded, and input goes through named actions.
 * Feedback exists for the important events, with values you tuned by playing, and everything returns to rest.
-* Art, sound, and music are real assets in a consistent direction, made with the tools in `game-development-asset-generation`, not shapes and oscillators, unless the game's existing style calls for that.
+* Art, sound, and music follow a consistent direction through the asset pipeline chosen with `game-development-asset-generation`. Procedural work meets the same visual and audio standards as authored assets; temporary stand-ins are gone.
 * Menus and the HUD survive resizing, work with the intended controls, and are readable over the busiest scene.
 * You played the game through scripted input on the real input path, opened every screenshot, checked the console, and fixed what you found.
-* You have not published anything.
+* Scene fixtures support inspection, while real-input journeys verify affected transitions. Procedural surfaces, collision, and hazards agree and become ready together where applicable.
+* Performance claims include comparable measurements and their execution environment when optimisation was part of the task.
+* You have not published anything without the user's request.
 * Your hand-off says what you played, what you saw, what you didn't get to, and what remains unverified, without calling the game finished or fun on faith. "No controller support yet", "placeholder music in level 2", and "untested on mobile" are useful to your human. A vague "some polish remaining" is not.
 
-If anything above is untrue, fix it before you hand over.
+Resolve applicable gaps before handing over, or report the concrete blocker and what remains unverified.
 
 # Examples
 
@@ -184,7 +201,7 @@ The assistant writes one HTML file with a canvas, draws the ship as a triangle a
 
 ### Good
 
-The assistant writes down the brief: the verb is dodging and shooting, the feel is fast and arcade, the pressure is escalating waves, the reward is score and a new weapon. It reads the wiki and store pages for three space shooters, opens their screenshots, and notes how they signal incoming fire, how their HUD sits over the playfield, and what the first wave looks like. It picks Phaser, sets up a fixed step with seeded spawns, named input actions for keyboard and touch, and a state and step hook for testing. It implements the controls and combat, plays them, and fixes slow ship turning while building the full game. It generates a ship, three enemies, a tileable starfield, shot and explosion effects, and a short loop of music using the tools from `game-development-asset-generation`, all from one style prompt. It adds shake, hit-stop on the boss hit, and a pitch-varied hit sound. In the same turn, it completes escalating waves, the weapon pickup, a boss, a title screen, pause, game over with restart, and a high score that persists. It plays through the whole thing with a script with the tab muted, opens the screenshots, sees the score is unreadable over the starfield, and adds a backing panel. It checks the whole brief, replaces every temporary asset, and replays the finished game after fixes. The first-turn hand-off delivers the playable game, lists what was played and the screenshots, and notes that touch works in emulation but was not tested on a real phone.
+The assistant writes down the brief: the verb is dodging and shooting, the feel is fast and arcade, the pressure is escalating waves, the reward is score and a new weapon. It reads the wiki and store pages for three space shooters, opens their screenshots, and notes how they signal incoming fire, how their HUD sits over the playfield, and what the first wave looks like. It saves concept references for normal flight and the boss fight, then picks Phaser and sets up a fixed step with seeded spawns, named input actions for keyboard and touch, and a state and step hook for testing. Named wave and boss scenes wait for asset readiness and make visual checks repeatable; a separate real-input run verifies progression into the boss fight. It implements the controls and combat, plays them, and fixes slow ship turning while building the full game. It generates a ship, three enemies, a tileable starfield, shot and explosion effects, and a short loop of music using the tools from `game-development-asset-generation`, all from one style prompt. It adds shake, hit-stop on the boss hit, and a pitch-varied hit sound. In the same turn, it completes escalating waves, the weapon pickup, a boss, a title screen, pause, game over with restart, and a high score that persists. It plays through the whole thing with a script with the tab muted, opens the screenshots, sees the score is unreadable over the starfield, and adds a backing panel. It checks the whole brief, replaces every temporary asset, and replays the finished game after fixes. The first-turn hand-off delivers the playable game, lists what was played and the screenshots, and notes that touch works in emulation but was not tested on a real phone.
 
 ## Example 3 - Reporting on a game feature
 
@@ -197,3 +214,7 @@ Assistant: Yes, the boss fight is complete and fully polished. It features three
 ### Good
 
 Assistant: It works, but I wouldn't call it ready. I played it six times. Phases one and two are fine. Phase three's laser sweep hits you from off-screen because the camera is still locked to the boss, so it feels unfair rather than hard. I'd widen the camera in that phase before you try it. Screenshots of all three phases are in `qa/boss/`. Not yet tested on a pad.
+
+# Further reading
+
+[OpenAI: Building games with Astra](https://developers.openai.com/blog/how-to-build-games-with-astra) illustrates concept references, procedural worlds, repeatable scenes, and measured optimisation. Its particular engine, terrain architecture, and benchmark sizes are examples, not requirements. [OpenAI: Astra model guidance](https://developers.openai.com/api/docs/guides/latest-model) explains instruction conflicts and proportionate verification. Consult these when revisiting the workflow; routine game tasks do not require rereading them.
