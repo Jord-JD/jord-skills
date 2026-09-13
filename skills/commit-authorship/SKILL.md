@@ -1,6 +1,6 @@
 ---
 name: commit-authorship
-description: Keep commit authorship to your human only - don't include yourself as a co-author. Read this skill before commiting to git / version control.
+description: "Preserves human commit authorship. Use when creating or amending Git commits; omit agent co-author attribution unless explicitly requested."
 ---
 
-Your human likely does not want/need you to include yourself as a co-author. Do not include yourself as a co-author when committing to git / version control unless specifically told to do so.
+Do not add yourself as a co-author when committing unless the user explicitly requests it. Preserve the human's configured authorship.

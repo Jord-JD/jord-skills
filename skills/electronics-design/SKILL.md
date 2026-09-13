@@ -1,6 +1,6 @@
 ---
 name: electronics-design
-description: Design and review electronic circuits, schematics, and PCB layouts, including component selection, power budgets, sourcing, manufacturing cost, and prototype validation. Use for new hardware, circuit changes, board layout decisions, or engineering audits in any CAD tool. Pure CAD export, rendering, or file conversion belongs to the tool-specific skill.
+description: "Designs and reviews electronic circuits and PCB layouts. Use when selecting components, changing circuits, making layout decisions, or reviewing hardware engineering. Pure CAD exports and file conversions use the tool-specific skill."
 ---
 
 # Electronics design

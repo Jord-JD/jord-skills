@@ -1,6 +1,6 @@
 ---
 name: blender-workflow
-description: Best-practice workflow for using Blender. Use this skill whenever you create, edit, inspect, render, animate, rig, export, or otherwise automate Blender content. Prefer reproducible Blender Python run through the real Blender executable, with structured checks and rendered visual inspection; use Blender MCP or GUI control as optional live-session tools rather than the primary modelling interface.
+description: "Creates and modifies Blender content through reproducible Python automation and visual checks. Use when modelling, rigging, animating, rendering, inspecting, or exporting Blender scenes."
 ---
 
 # Blender workflow
@@ -92,13 +92,11 @@ Have Blender emit machine-readable facts that matter for the task. Useful checks
 - missing links or unexpected duplicate objects;
 - relevant distances and clearances.
 
-For fabrication or 3D-printing work, also check the things that determine physical correctness: units, overall dimensions, wall thicknesses, mating clearances, disconnected geometry, non-manifold/open edges, normals, and whether exported geometry has the intended scale.
-
-For animation or rigging, inspect key frames, frame ranges, parent/bone relationships, constraints, and representative poses.
+For physical fabrication, printing, rigging, or animation, read the applicable section of [specialized checks](references/fabrication-and-rigging.md).
 
 ### Visual inspection
 
-Render several useful diagnostic views, normally including a perspective view plus orthographic or close-up views that expose likely problems. Render them as separate images rather than a contact sheet so each can be inspected closely.
+Render several useful diagnostic views, normally including a perspective view plus orthographic or close-up views that expose likely problems. Inspect individual images closely; contact sheets may help locate views but do not replace detail inspection.
 
 Use inexpensive preview settings during iteration. Do not spend time on a high-sample final render while geometry, framing, lighting, intersections, materials, or proportions are still being corrected.
 
@@ -114,31 +112,9 @@ Actually inspect the rendered images before declaring the work finished. Look fo
 
 If a problem is visible, fix it, rerender the affected views, and inspect again.
 
-## MCP is a live-session side channel
+## Live sessions and GUI control
 
-If Blender's official MCP integration is available, use it when interacting with an already-open Blender session is valuable: inspecting the current scene or selection, understanding live state, examining something that is cumbersome to serialise, or applying a small interactive change.
-
-Do not assume MCP is inherently better than Python. For substantial work, prefer writing the durable Blender Python in the repository and executing it through Blender. If MCP is the only convenient route into the live session, use it to execute or support that scripted workflow rather than turning a coherent modelling operation into dozens of opaque micro-calls.
-
-Treat any Blender MCP capable of executing generated Python as powerful local code execution. Keep it local/trusted and respect the surrounding sandbox and approval model.
-
-## GUI/computer control is supplemental
-
-Use GUI automation when visual editor interaction is genuinely required or when no reliable structured interface exists. Do not use mouse/keyboard automation for ordinary scene changes that can be expressed reliably in `bpy`.
-
-A good hybrid workflow is:
-
-```text
-agent
-  -> repository Python scripts
-  -> Blender background execution
-  -> scene-info / validation output
-  -> preview renders
-  -> visual + structural inspection
-  -> iterate
-
-optional: Blender MCP or GUI inspection of a live session
-```
+Use an available Blender MCP for useful live-state inspection or small interactive changes. Use GUI automation when the operation cannot be expressed reliably through the data API. Keep substantial transformations in durable scripts even when MCP executes them. Respect the sandbox and permissions for code execution; a live session does not expand authorization.
 
 ## Finishing checklist
 

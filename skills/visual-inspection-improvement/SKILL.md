@@ -1,21 +1,17 @@
 ---
 name: visual-inspection-improvement
-description: A visual/graphical inspection and/or improvement process. Use this skill when your human asks you to visually inspect and/or improve something visually/graphically. This could be a frontend element on a website or web app, a game asset, part of a GUI, or something similar.
+description: "Inspects and improves visual presentation using captured user-facing states. Use when asked to visually review or improve an interface, asset, or rendered output."
 ---
 
-# Visual inspection and improvement workflow
+# Visual inspection and improvement
 
-Assuming your human has asked you to visually inspect and/or improve the look/graphics/visuals of something, you should follow a process similar to the following.
+Identify the requested result, relevant views and states, and existing style constraints. For a review-only request, capture, inspect, and report; do not modify the work unless asked.
 
-1. Consider all the ways in which this thing can be seen by users. Examples:
-   * Website / web application: different resolutions, viewport sizes, or zoom levels, or shown on various pages with different backgrounds
-   * Game asset: it could be in different poses or at different angles, in different states, shown on different screens, or used by other characters/creatures
-   * Text: it may be shown in different layouts or wrapped in different ways
+1. Capture the affected views at useful sizes, angles, poses, backgrounds, or resolutions. Cover states that could expose regressions without exhaustively capturing unrelated parts of the project.
+2. Open and inspect the images. Contact sheets can help navigate a set; use individual views and close-ups for judgments about detail, text, alignment, materials, or visual quality.
+3. Compare against the brief and established references. Identify concrete defects such as clipping, unreadable text, wrong proportions, inconsistent styling, or a missing visual requirement.
+4. For improvement work, fix observed defects within scope, recapture affected views, and inspect them again. Broaden the review if a shared change could affect other states.
 
-2. Take screenshots of the thing in as many ways as you think end users may see it. Take multiple screenshots. Do not use a contact sheet or grid. You can see things better in close-ups than in grids of multiple items. Try to take the screenshots close-up and focused on the thing you're trying to improve.
+Continue until the requested visual criteria are met and no observed defects within scope remain unresolved. Do not invent a redesign or keep making subjective changes after those checks pass. If a limitation blocks a fix or inspection, state it and finish unaffected work.
 
-3. Look at all the screenshots you have captured of the thing in question. Carefully consider what looks good and what looks bad. Be very critical, but also take into account any specific styling or general requests from your human if they have provided any.
-
-4. Make improvements to the thing. When you think you're done visually improving it, you need to make sure, so go back to step 2 (retake all the screenshots of the improved version of the thing) and then iterate.
-
-5. Stop improving it only when you can no longer see any visual problems in the thing you've been asked to improve. If this takes many iterations, that's fine. It's better to take longer and produce a visually great result for your human than to be quick and provide something ugly.
+Report only what the inspected images support, with useful evidence paths and unverified states. Taking screenshots without looking at them is not verification.

@@ -1,29 +1,20 @@
 ---
 name: polite-browser-use
-description: Mandatory browser-testing safety and cleanup. Read before the first browser-related action, including any T3/in-app preview call, website/game preview, Playwright run, external browser, or Electron launch.
+description: "Keeps browser and Electron operation silent and unobtrusive, and cleans up task-owned tabs and processes. Use when launching or controlling a browser, Electron app, or live preview; apply before the first operation."
 ---
 
 Browser testing is good. However, if your human is using the computer you're testing on, your testing may disturb them if you don't take precautions.
 
-# Gate browser work before it starts
+# Apply before browser operation
 
-Read and apply this skill before the first browser-related action. If browser testing becomes necessary midway through another task, pause before making any browser call and apply this skill first.
-
-Browser-related actions include:
-
-* Any T3 or in-app `preview_*` call, including status checks, opening, navigation, snapshots, evaluation, clicks, typing, and recording.
-* Website or game previews, whether visible, inline, headless, or in the background.
-* Playwright or other browser automation.
-* External browser and Electron launches.
-
-A collaborative or internal preview still counts as browser testing.
+Apply before launching or controlling a browser, Electron app, or live preview, including navigation, interaction, snapshots, and recordings. Hidden or internal previews still count. Search APIs, HTTP document retrieval, and reading saved screenshots do not operate a browser and do not trigger this workflow.
 
 # Keep browser testing silent
 
 Sound can be especially annoying or confusing when it starts playing out of nowhere. You must not let your browser testing produce sound through your human's speakers.
 
 * Mute the browser tab, process, or application before loading a page that may play audio or interacting with the application. Do not click Start, Play, or a similar control until silence is verified.
-* If the browser cannot be muted reliably, modify the application to add a test-only mute mode before continuing. You are allowed to make this small change even when it isn't part of the main task.
+* If the browser cannot be muted reliably and the task authorizes editing this application, add a focused test-only mute mode before continuing. Otherwise use an available silent environment or stop the audio-producing interaction and report the limitation. This does not authorize modifying a third-party or read-only application.
 * Prefer the application's existing mute setting or audio manager. Otherwise, add a focused automation setting using something like an environment variable, launch argument, configuration value, or query parameter.
 * Enable the mute before the application sets up its audio. Make sure it covers music, sound effects, HTML media, Web Audio, and any new windows or views the application creates.
 * Inspect the actual mute or audio-enabled state when the tools expose it. Do not infer silence from headless, background, hidden, or internal-preview operation.

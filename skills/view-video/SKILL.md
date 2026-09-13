@@ -1,6 +1,6 @@
 ---
 name: view-video
-description: View and understand videos from URLs or local files by downloading with yt-dlp, extracting timestamped frames with FFmpeg, actually inspecting the images, and reading subtitles. Use when asked to watch, explain, summarise, review, or answer questions about a video, including tutorials, demonstrations, screen recordings, and gameplay footage.
+description: "Inspects videos from URLs or local files using timestamped frames and transcripts. Use when asked to watch, summarize, review, explain, or answer questions about a video or recording."
 ---
 
 # View videos
@@ -29,22 +29,7 @@ The helper gets remote metadata and captions first, requests video up to 1080p w
 
 Reuse the same source and `--out` directory for follow-ups. This preserves the downloaded source and creates a separate run for each inspection. The helper downloads the full source once; `--start` and `--end` restrict local extraction, not network download. For an unusually large source and a narrow question, use yt-dlp's `--download-sections` separately if worthwhile, and pass the excerpt's original start time through `--offset`.
 
-Useful options:
-
-```bash
-# Fetch/read captions without extracting pictures. Remote video is not downloaded
-# unless local transcription is requested and captions are missing.
-python3 /absolute/path/to/view-video/scripts/view_video.py 'URL' --out /tmp/video-review --transcript-only
-
-# Inspect an interesting passage. Times refer to the original video timeline.
-python3 /absolute/path/to/view-video/scripts/view_video.py 'URL' --out /tmp/video-review --start 2:15 --end 2:45 --fps 2 --max-frames 80
-
-# Inspect only these moments at source resolution, without another overview.
-python3 /absolute/path/to/view-video/scripts/view_video.py 'URL' --out /tmp/video-review --timestamps 2:18,2:19,2:20 --width 0
-
-# Supply captions for a local file. SRT and WebVTT are supported.
-python3 /absolute/path/to/view-video/scripts/view_video.py /path/demo.mp4 --out /tmp/demo-review --subtitles /path/demo.en.vtt --language en
-```
+For transcript-only extraction, narrow time ranges, selected frames, or supplied subtitles, read [focused commands](references/commands.md).
 
 Run `--help` for the remaining options. If dependencies are missing, check existing installations before adding new ones. Download errors should remain visible. Do not repeatedly retry a login restriction or rate limit without addressing its cause.
 
