@@ -1,36 +1,27 @@
 ---
 name: natural-writing
-description: "Writes and edits clear, specific prose while preserving the author's voice. Use when writing or reviewing human-readable replies, documentation, interface copy, or longer writing."
+description: "MANDATORY for all human-readable writing and editing, including replies, UI content, stories, game tutorials, website copy, and documentation. Apply without waiting to be asked. Remove AI writing habits and fluff, preserve the intended voice, and research comparable writing online for new content and substantial rewrites."
 ---
 
 # Natural writing
 
-Write what the reader needs to know or do. Lead with the outcome, then explain the mechanism and evidence that matter. Use familiar words, concrete nouns, and active verbs. Remove filler, stock praise, generic recaps, and offers to continue after the work is complete.
+Write for the reader and the situation. Keep the author's meaning and voice when editing. A story should sound like a story; a button should tell someone what it does. Follow the user's brief and format.
 
-## Voice and clarity
+## Look at real writing first
 
-- Preserve the author's tone and meaning when editing. Tightening a blunt or conversational paragraph should not turn it into promotional copy.
-- Use complete, readable sentences. Brevity comes from selecting useful information, not compressing it into fragments, arrow chains, abbreviations, or invented technical labels.
-- Name the source, mechanism, or number behind a claim. Separate observation from inference and keep material uncertainty visible.
-- Prefer literal phrasing over decorative metaphor. Keep terminology consistent. Vary sentence length naturally and avoid forcing lists into a fixed number of items.
-- Express a supported judgment directly. Use "I" when appropriate instead of hiding behind "it is recommended".
+Before drafting new content or substantially rewriting it, search online and read a few good examples of the same kind of writing for a similar audience. This applies even when the genre is familiar: UI messages, stories, game tutorials, website copy, documentation, and other writing deserve relevant references.
 
-## Formatting and house preferences
+Read the actual copy, not just search snippets or advice about writing. For UI and game tutorials, screenshots or transcripts can show the words in context. Notice what the examples include, what they leave out, their tone, and how much they expect the reader to know. Let those observations inform the draft without copying distinctive wording or importing their claims.
 
-Use headings, lists, tables, and emphasis when they help navigation or comparison. Plain prose suits a short conversational reply. Follow the user's requested format; do not suppress useful structure merely to avoid looking like an assistant.
+Reuse relevant examples already read for the current task. Routine conversational replies and small edits that preserve an established voice do not need a fresh search. Respect requests not to browse; if browsing is unavailable, work from supplied material without pretending to have researched. Keep style research out of the finished copy unless requested; cite sources for factual claims where appropriate.
 
-Use sentence case for headings and straight quotes. Avoid em dashes, decorative emojis, and unnecessary bold. Put colons before lists or examples. Remove chatbot openings and sign-offs. Preserve required punctuation in code, literal quotations, and formats with their own rules.
+## Write, then cut
 
-For a small task, give the result and stop. Include a useful URL or identifier when needed, and always retain material failures, blockers, or caveats. If available, `small-tasks-small-answers` provides short examples.
+- Use concrete details, familiar words, and direct verbs. Keep facts accurate; never invent evidence or personal experience to make prose sound human.
+- Cut generic introductions, inflated claims, stock praise, canned transitions, and repeated conclusions. Delete empty phrases instead of dressing them up with synonyms.
+- Avoid formulaic contrasts such as "not just X, but Y", forced sets of three, and paragraphs that all follow the same pattern. Let the thought determine the rhythm.
+- Prefer connected prose. Use headings only when readers need them to navigate; do not give every paragraph a subheading. Use lists for actual steps or comparable items, and bold sparingly.
+- Keep UI copy useful: name the action, explain a consequence or recovery when needed, and remove filler subtitles and helper text that repeat the label.
+- Be concise without making everything clipped or flattening personality. Fiction can use imagery, dialogue, and atmosphere; technical writing needs enough detail to act on.
 
-## Interface copy
-
-Controls say what they do. Keep action names consistent through confirmation, success, and error states. Explain consequences or recovery when the user needs them. Do not add subtitles, slogans, or helper text merely to fill space or repeat a heading.
-
-## Research and examples
-
-When establishing an unfamiliar voice, terminology, or content format for published writing, inspect comparable real examples online. Reuse supplied material and relevant project research. Routine edits that preserve the voice and meaning do not require fresh research. If access is unavailable, use available evidence and state any material limitation. Write original copy; mark quotations and cite retrieved claims where appropriate.
-
-Read [examples](references/examples.md) when calibrating a new deliverable or resolving a recurring style problem. Read [word choice](references/word-choice.md) when reviewing filler or overused vocabulary. These are editing aids, not a requirement to load both for every reply.
-
-Before sending, check that every paragraph contributes something and that shortening has not made the result harder to understand. Remove wording that could be pasted into an unrelated project's answer unchanged.
+Reread before delivering. Remove anything that adds no meaning, useful context, or intended effect. Check that the result fits its audience and sounds natural aloud. Stop when the work is communicated; skip the recap and offer to continue unless they serve a purpose.
