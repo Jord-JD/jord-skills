@@ -1,35 +1,37 @@
 ---
 name: research-backed-frontend-development
-description: "Designs and reviews interfaces using comparable products and visual verification. Use when creating or changing a UI or reviewing its appearance or interactions, across web, native, game, and embedded displays. Small fixes reuse established design evidence."
+description: "MANDATORY: read this skill for every frontend, UI, or UX task, including small fixes, styling, components, interaction design, accessibility, reviews, and design-only advice across web, native, game, and embedded interfaces. For new or changed design decisions, visually research at least two comparable products and read relevant UX/UI guidance before proposing or coding. Study videos or live interactions for flows and motion, then visually verify the result."
 ---
 
-# Interface development
+# Research-backed frontend development
 
-Build an original interface suited to its users, display, controls, and system constraints. Aim for excellent visual execution: coherent type, spacing, composition, imagery, and state feedback. Preserve the existing visual language for narrow changes. Clarity, accessibility, and safe operation take precedence over decoration.
+Apply this skill to every frontend, UI, or UX task, even a small fix or a request for advice. Scale the work to the change; the research exemptions below do not exempt a task from using the skill.
 
-## Route by the requested change
+Make an interface that fits its subject, users, and primary task. Aim for a considered visual identity and straightforward interactions. Respect the brief, existing design system, stack, and scope: a design request does not require implementation, and a review does not authorise edits.
 
-Inspect the existing interface, relevant project files, target display and controls, and accepted requirements first. Preserve the stack and unrelated user work. Resolve routine choices yourself; ask only about ambiguity that would materially change the requested result.
+## Research before designing
 
-- **New product, screen, or substantial redesign:** Read [research](references/research.md), then [design](references/design.md). Use inspected comparisons to establish the direction, reuse applicable project evidence, and record the decisions it supports.
-- **Existing interface change:** Inspect affected states and reuse the design system. Read [research](references/research.md) only if an unresolved design decision needs comparisons. A typo, spacing correction, or behaviour-preserving fix does not need a new product direction.
-- **Review only:** Inspect the requested states and compare against the brief, established design, and relevant evidence. Report findings and limitations without modifying the project.
-- **Design only:** Deliver the requested design and interaction specification. Do not start implementation unless asked.
+For a new interface, substantial change, or unresolved design decision:
 
-Read [interaction contracts](references/interaction-contract.md) when changing flows, state transitions, or system integration. Read [implementation](references/implementation.md) for a new interface or substantial implementation. Load only the references that apply. The UI contract does not authorize unrelated backend, engine, or firmware changes.
+- Search online for at least two independent products that solve a similar problem for similar users. Include a reference with strong visual execution. Inspect the relevant screen or flow, not merely the product's marketing homepage.
+- Actually view screenshots or rendered screens from both products. Live sites, official screenshots, help articles with images, app-store galleries, and recorded demos can provide evidence. Open images at a readable size. Search snippets, page text, image descriptions, and screenshots saved but never viewed do not count as visual inspection.
+- For interactions, navigation, or motion, also examine a relevant video or exercise a live demo. Inspect the before, during, and after states; use timestamped video frames when playback is unavailable. A transcript alone cannot show animation or layout changes. Static composition work need not include a video.
+- Search for and read relevant UX/UI best practices from at least one authoritative source, such as platform design guidance, an established design system, W3C accessibility guidance, or usability research. Read the guidance itself; a title, search snippet, or metadata-only response does not count. Match it to the actual problem: forms, filtering, touch controls, navigation, data density, and so on. Competitor behaviour is an observation, not proof of good usability.
 
-## Verify the affected experience
+Before proposing even a preliminary direction, keep a short research note with source URLs, screens or video timestamps actually viewed, visual observations from both products, a relevant recommendation from the guidance text, and the decisions these support. Check that any proposed interaction is also informed by a video or live interaction you actually inspected. If evidence is missing or a fetch failed, try another source or available tool. Calling a proposal "untested" does not replace this research. Do not substitute remembered conventions or a list of links for research. A request for a quick answer or "just the code" does not remove this preparation.
 
-Exercise the relevant journeys with the intended inputs in the closest available target environment. Check console, engine, application, or device diagnostics as applicable. Run the project's affected checks and expand testing only when failures or shared-system changes justify it.
+Reuse qualifying research already gathered for the task. A typo, spacing correction, or other narrow fix that preserves the design only needs inspection of the affected interface. Respect requests not to browse; if access remains unavailable after alternatives, identify the missing evidence and proceed from supplied material without claiming the research was completed. Keep research notes out of the product UI.
 
-Capture and actually inspect important states at target sizes and resolutions. Check hierarchy, spacing, clipping, legibility, contrast, focus, control feedback, and consistency. Include loading, empty, error, offline, and recovery states when affected. Tiny displays need inspection at their actual scale as well as enlarged detail.
+## Choose a direction and build
 
-For a new visual direction, compare captures against the declared ambition and strongest research evidence. Identify visible weaknesses, fix them within the brief, and recapture affected states. Use `visual-inspection-improvement` when available. Contact sheets can locate views; use individual images for detailed judgments.
+Turn the evidence into a brief direction: the main user task, information hierarchy, layout, type, palette, and relevant interaction states. Explain which patterns to adapt or avoid and why. Learn from references without copying their identity or assets.
 
-Before operating browsers or previews, use `polite-browser-use` when available. Keep audio silent, avoid unexpected windows, and clean up task-owned tabs and processes. For other interfaces, use the relevant emulator, renderer, application, or authorized hardware. State what remains unverified when the real target is unavailable.
+Choose typography, spacing, imagery, and colour for this subject. Avoid interchangeable card grids, decorative labels, and fashionable effects added without a purpose. Expressive work needs deliberate detail; restrained work needs precise proportions and alignment. Keep motion useful and respect reduced-motion preferences.
 
-## Completion and handoff
+Implement within the existing project conventions. Make controls work, use appropriate semantic elements, and account for keyboard or controller focus, readable contrast, target sizes, and responsive layouts. Include the loading, empty, error, and recovery states that the feature can encounter. Use realistic content and apply `natural-writing` to copy; the same research can support both skills.
 
-Continue through authorized implementation and fixes until required interactions work, affected checks pass or their failures are explained, and inspected presentation meets the brief without unresolved visible defects within scope. A review finishes with supported findings; it does not require fixing them.
+## Inspect the result
 
-Report the result, important verification evidence, and material limitations. Include research sources and design decisions when they informed the work. A small fix needs a small handoff. Do not call the interface polished or production-ready as a substitute for evidence.
+Run the changed interface, exercise its main interactions, and actually view captures at the relevant screen sizes. Check hierarchy, spacing, legibility, overflow, focus, and state feedback against the brief and research. Fix visible problems and recapture the affected states. Run appropriate project checks; code inspection alone does not establish visual quality.
+
+For design-only work, check the proposed layout and states against the evidence and clearly distinguish the proposal from tested behaviour. For reviews, report supported findings. Keep the handoff brief: what changed, the sources behind important choices, what was verified, and any material limits. Follow `polite-browser-use` when operating browsers and `view-video` when inspecting recordings, if available.
