@@ -1,6 +1,6 @@
 ---
 name: natural-writing
-description: "MANDATORY for all human-readable writing and editing, including replies, UI content, stories, game tutorials, website copy, and documentation. Apply without waiting to be asked. Remove AI writing habits and fluff, preserve the intended voice, and research comparable writing online for new content and substantial rewrites."
+description: "MANDATORY: read this skill before writing or editing human-readable text, even a single sentence. For new content or substantial rewrites, open and read actual comparable examples from at least two independent online sources before drafting; short UI labels and game hints are not exempt. Applies to replies, UI content, stories, game tutorials, website copy, and documentation. Preserve voice and remove fluff."
 ---
 
 # Natural writing
@@ -9,11 +9,15 @@ Write for the reader and the situation. Keep the author's meaning and voice when
 
 ## Look at real writing first
 
-Before drafting new content or substantially rewriting it, search online and read a few good examples of the same kind of writing for a similar audience. This applies even when the genre is familiar: UI messages, stories, game tutorials, website copy, documentation, and other writing deserve relevant references.
+Before drafting new content or substantially rewriting it, open and read actual examples from at least two independent online sources: different authors, publications, or products. Two pages from the same source count as one. Match the kind of writing and audience, even for familiar genres or very short copy such as a button or tutorial prompt.
 
-Read the actual copy, not just search snippets or advice about writing. For UI and game tutorials, screenshots or transcripts can show the words in context. Notice what the examples include, what they leave out, their tone, and how much they expect the reader to know. Let those observations inform the draft without copying distinctive wording or importing their claims.
+Search results locate examples; they do not satisfy this requirement. Each source must contain comparable writing: for UI copy, actual interface labels or messages; for game hints, tutorial text or player-facing instructions in game manuals. Screenshots, transcripts, and help pages quoting that text also work. Advice or criticism without actual examples does not count. A failed fetch, empty page, or metadata-only response does not count: try another source or product.
 
-Reuse relevant examples already read for the current task. Routine conversational replies and small edits that preserve an established voice do not need a fresh search. Respect requests not to browse; if browsing is unavailable, work from supplied material without pretending to have researched. Keep style research out of the finished copy unless requested; cite sources for factual claims where appropriate.
+Before drafting, record a brief research note in your working context: two source URLs, the relevant writing actually read in each, and what informs the draft. Before delivering, check that both entries qualify. If either is missing, resume research. A request for "just the copy" limits the final answer, not this preparation.
+
+Notice what the examples include, what they leave out, their tone, and how much they expect the reader to know. Let those observations inform the draft without copying distinctive wording or importing their claims.
+
+Reuse qualifying examples already read for the current task. Routine conversational replies and small edits that preserve an established voice do not need a fresh search; newly composed short copy still does. Respect requests not to browse. If research remains unavailable after trying alternatives, work from supplied material and briefly disclose the shortfall instead of claiming research is complete. Keep style research out of the finished copy unless requested; cite sources for factual claims where appropriate.
 
 ## Write, then cut
 
