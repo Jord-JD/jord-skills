@@ -1,45 +1,32 @@
 ---
 name: game-development
-description: "Builds and changes playable games, covering mechanics, presentation, and playtesting. Use when creating a game, adding a gameplay feature, or fixing game behaviour."
+description: "MANDATORY for game development tasks: new games, gameplay design, features, fixes, and playtesting. Research comparable games before choosing new mechanics, inspect actual gameplay, and verify changes by playing through real controls. Keep small fixes within the existing design."
 ---
 
 # Game development
 
-Complete the experience requested in the brief. Continue through implementation, asset integration, playtesting, and fixes within the authorized scope. Make routine decisions without waiting for another prompt. A prototype or narrow fix should stay that size; a complete game needs all requested content and progression.
+Build the experience the user asked for, at the requested scale. Preserve the project's engine, controls, style, and unrelated work. A prototype can stay a prototype; a complete game needs its requested content, progression, failure, and retry paths.
 
-Aim for excellent controls, art direction, sound, pacing, and performance at the requested scale. A running loop or attractive opening scene does not establish completion. Track the requested mechanics, modes, levels, and player-facing states through implementation and verification. Report concrete blockers and complete unaffected work when a dependency prevents finishing.
+## Understand the game before building
 
-## Choose the relevant work
+For a new game or substantial gameplay redesign, research at least two comparable games. Watch relevant gameplay or inspect a playable demo, rather than relying on descriptions, trailers, or search snippets alone. Study the player's actions, timing, feedback, difficulty, and recovery from mistakes. Read relevant engine documentation when implementation details are uncertain.
 
-Inspect the affected project files, engine version, input conventions, art style, and existing tests. Preserve the established stack and unrelated user work.
+Keep brief notes with sources, footage timestamps or played sequences, observations, and the decisions they support. Verify that both examples were actually inspected before proposing the design. Prefer short relevant footage or accessible demos. If a fetch fails, try another source and another available access method, such as a browser or direct download. Use the normal approval path for sandbox-blocked operations; one tool's network failure does not establish that research is unavailable. If alternatives remain blocked, explain the evidence missing. Reuse current project research. A bug fix or small addition within an established design needs focused reproduction and inspection, not a new research project.
 
-- For a new game or substantial design change, define the primary verb, objective, pressure, reward, failure/retry path, first minute, target controls, and scope. Inspect comparable games and actual gameplay evidence to resolve design decisions. Reuse relevant recorded research and keep source URLs and timestamps. Implement the core interaction early, then complete the requested experience.
-- For a feature or bug fix, reproduce the affected behaviour and work within the existing design. Use engine documentation or focused design references where needed. A technical fix or menu typo does not require fresh game research, new assets, or a new test harness.
-- For a review, inspect and report evidence without modifying the game unless asked.
+Define the primary action, objective, challenge, reward, controls, and first minute of play. Implement the core interaction early and play it before building the rest around it. Tune from observed behaviour; borrowed timing values are starting points, not universal rules. For design-only requests, give the requested proposal and distinguish reference observations from untested ideas.
 
-Read only the relevant references:
+## Build the requested experience
 
-| Work | Reference |
-| --- | --- |
-| Real-time loop, input, physics, or gameplay randomness | [Simulation](references/simulation.md) |
-| Jumping, camera, impacts, or response tuning | [Movement and feedback](references/movement-and-feedback.md) |
-| Generated terrain, moving water, or streaming collision | [Procedural worlds](references/procedural-worlds.md) |
-| Save data or persistent settings | [Saving](references/saving.md) |
-| Gameplay implementation or behavioural verification | [Playtesting](references/playtesting.md) |
-| Optimisation or measured performance problems | [Performance](references/performance.md) |
+Make actions readable and responsive. Connect gameplay, animation, camera, sound, and interface feedback so the player can tell what happened. Keep effects proportionate and ensure they return to rest. Include required input methods and a clear way to pause, fail, retry, and finish where applicable.
 
-## Integrate presentation
+Use the existing architecture and the simplest implementation that supports the brief. Read [technical checks](references/technical-checks.md) only for changes involving simulation, movement, procedural worlds, persistence, or performance.
 
-Produce assets only where the task needs them. Use `game-development-asset-generation` when available for asset selection, concepts, and runtime checks. Authored, generated, and procedural work must fit the same visual direction. Replace temporary stand-ins in finished deliverables; preserve intentional prototype scope.
+Use `game-development-asset-generation` for assets and `research-backed-frontend-development` for menus and HUDs when available. Reuse their research rather than repeating it. Integrate presentation during development and inspect it at gameplay size and in motion. Preserve intentional placeholder scope; replace stand-ins when delivering finished art.
 
-Inspect characters, threats, and feedback at gameplay size and in motion. Measure spritesheet frames, margins, and spacing before importing them. Menus and HUDs must remain legible over busy scenes, survive target screen sizes, and work with the required controls. Keep audio levels consistent and effects from clipping. Effects must return to rest.
+## Play, inspect, and fix
 
-Use available companion skills only for their part of the task: `research-backed-frontend-development` for interface design, `view-video` for footage, `visual-inspection-improvement` for visual review, and `natural-writing` for player-facing text. Reuse evidence across these workflows. Missing companion skills do not remove the checks described here.
+Exercise the affected journeys through real keyboard, pointer, touch, or controller inputs. Calling a gameplay function directly does not test the input path. Check consequences: a hit changes health, defeat changes state, and retry restores a playable game. Use repeatable fixtures for hard-to-reach states, but also test the transitions into them.
 
-## Verify and deliver
+Actually view screenshots or recordings from play, check logs, and fix observed problems before replaying the affected scenario. Check readability, camera framing, collision, feedback, and relevant screen sizes. Use existing tests; add a focused regression check when it will catch the failure. A successful build alone does not establish correct gameplay.
 
-Play affected journeys through real inputs. Check resulting state and inspect actual captures; calling a gameplay function directly does not verify input handling. Reuse fixtures for hard-to-reach visual states, but test transitions through real controls. Check logs and fix failures caused by the change. Expand verification only for new failures, shared-system changes, or unresolved concerns.
-
-Before operating a browser or preview, follow `polite-browser-use` when available: mute before play, avoid unexpected windows, and close the tabs and test processes you started.
-
-Finish when the requested content and interactions work, affected checks pass, and inspected presentation meets the brief without unresolved visible defects within scope. Report what was played, the evidence, and any unverified target or concrete blocker. Do not claim fun, polish, or performance without supporting observations. Do not publish, upload, or submit the game unless the user requests it.
+Apply `polite-browser-use` before browser or preview operation, and `view-video` for recordings when available. Finish when the requested behaviours and relevant checks pass, or explain a concrete blocker. Report what was played and what remains unverified. Do not publish or upload the game unless requested.

@@ -1,129 +1,44 @@
 ---
 name: blender-workflow
-description: "Creates and modifies Blender content through reproducible Python automation and visual checks. Use when modelling, rigging, animating, rendering, inspecting, or exporting Blender scenes."
+description: "Use for Blender modelling, materials, scenes, rigging, animation, rendering, inspection, and exports. Research visual references for new or substantially changed artwork, build with reproducible Blender Python, and inspect renders and scene data before delivery."
 ---
 
 # Blender workflow
 
-## Default approach
+Use Blender Python as the main interface. Keep substantial work in rerunnable scripts; preserve existing scene content and the user's chosen style.
 
-Treat Blender Python as the primary control interface.
+## Study the subject
 
-For substantial work, prefer this order:
+Before a new model or scene, or substantial changes to its shape, materials, lighting, or composition, find and visually inspect references from at least two independent relevant sources. Study actual images, renders, or video frames, not search snippets or page descriptions. Choose references that resolve the task's questions: silhouette and construction, material response, proportions, composition, or motion. Use several angles when one view leaves the form ambiguous.
 
-1. Write or update version-controlled Python using `bpy`, `bmesh`, `mathutils`, and Blender's data APIs.
-2. Run that code with the actual Blender executable, normally in background mode.
-3. Inspect both machine-readable scene state and rendered images.
-4. Iterate until the structural and visual checks pass.
-5. Use Blender MCP when a live Blender session is genuinely useful.
-6. Use GUI/computer-control tools only for tasks that are awkward or impossible through Blender's programmatic interfaces.
+Briefly note the sources and what you observed before modelling. Borrow useful principles without copying a distinctive design or overriding the brief. Supplied references count; reuse evidence already inspected for this task. A small correction or mechanical export needs only the relevant existing reference and checks, not a new mood board. If visual access fails, try alternatives, then disclose any remaining gap.
 
-Do not replace a good Python workflow with a long sequence of opaque GUI clicks or granular MCP mutations. Substantial edits should be represented in scripts where practical so they can be diffed, rerun, debugged, and reused. The `.blend` file is still a legitimate project artefact; not every existing scene needs to be regenerated from scratch.
+When an API or workflow is uncertain, check the official Blender manual or Python API documentation for the installed Blender version. Do not guess context requirements or assume an example for another version still works.
 
-## Run scripts through Blender
+## Build with Python
 
-Prefer the project's real Blender installation over a standalone `pip install bpy` environment unless there is a specific reason to use the Python module build.
-
-A typical command is:
+Use the project's real Blender executable, normally in background mode:
 
 ```bash
-blender scene.blend \
-  --background \
-  --python-exit-code 1 \
-  --python scripts/change_scene.py
+blender scene.blend --background --python-exit-code 1 --python scripts/change_scene.py
 ```
 
-For a greenfield scene, a script may start from an empty/factory scene instead. Pass script-specific arguments after `--` when useful.
+For a new scene, use an explicit clean starting state. For an existing project, inspect it first and preserve unrelated objects. Keep substantial automation in the repository, capture output and failures, and explicitly save the intended `.blend`. Make a checkpoint before destructive changes to valuable source content.
 
-Always:
+Prefer `bpy` data APIs, `bmesh`, and `mathutils` over context-sensitive operators. When using `bpy.ops`, explicitly establish the required active object, selection, mode, and other context; do not rely on an interactive viewport existing in background mode. Keep Blender API work on its main thread.
 
-- capture stdout and stderr;
-- treat a non-zero exit status as failure;
-- save the intended output `.blend` explicitly;
-- avoid silently overwriting a valuable source file unless that is intentional;
-- keep repeatable scripts in the repository rather than hiding substantial logic in one-off shell snippets.
+Use stable object names, explicit units and parameters, and repeatable operations that avoid accidental duplicates. Account for transforms and world-space dimensions. Use non-destructive modifiers where useful. Live Blender tools or GUI control can help with inspection or awkward operations; keep substantial changes reproducible in scripts.
 
-If Blender is not available, first look for an existing project-specific installation or documented setup. Install Blender only when the environment permits it and doing so is appropriate for the task.
+If Blender is unavailable, check the project's documented installation. Do not present unexecuted code as a verified scene.
 
-## Write robust Blender automation
+## Inspect and deliver
 
-Prefer Blender's data API and `bmesh` over context-sensitive `bpy.ops` where practical. Operators are fine when they are the clearest solution, but many depend on selection, active objects, editor areas, modes, or other UI context that may not exist in headless execution.
+Run the automation in Blender and check both scene data and rendered images. A successful script alone proves neither visual nor structural correctness.
 
-For scripts you expect to iterate on:
+Check the facts that matter: dimensions and transforms, object and collection state, materials, modifiers, missing dependencies, or clearances. Render inexpensive previews from views that expose likely problems. Actually open and inspect those images for silhouette, proportions, intersections, floating parts, shading, lighting, and framing. Correct visible defects and inspect fresh renders before making the final render. A small edit needs focused checks; a complex object may need perspective, orthographic, and detail views.
 
-- give important objects, collections, materials, cameras, and lights stable descriptive names;
-- make important dimensions and tunable values explicit constants or parameters rather than scattering magic numbers through the script;
-- make scripts deterministic and reasonably idempotent where practical;
-- use explicit units and be careful about scale and transform assumptions;
-- preserve unrelated user-authored scene content when modifying an existing file;
-- prefer non-destructive modifiers where they make iteration safer;
-- create a checkpoint before destructive edits to an important existing scene;
-- do not run Blender API work from arbitrary background Python threads; Blender's Python integration is not generally thread-safe.
+For fabrication, check units, wall thickness, mating clearances, disconnected geometry, non-manifold or open edges, and normals. Verify export scale; a convincing render does not establish physical correctness.
 
-Do not depend on the currently selected object, current mode, active editor, or viewport state unless the task specifically requires interactive context.
+For rigs and animation, check frame ranges, parenting, bones, constraints, deformations, and intersections. Inspect representative poses and transitions or short sequences when motion matters. Verify exported animation in the target runtime when available.
 
-## Inspect, render, then iterate
-
-A script completing without an exception does not mean the result is correct. After every meaningful modelling, layout, material, lighting, rigging, or animation change, inspect the result.
-
-Whenever useful, produce a small review bundle such as:
-
-```text
-output/blender-review/
-  scene-info.json
-  perspective.png
-  front.png
-  side.png
-  top.png
-```
-
-The exact files should fit the task. Do not create unnecessary output just to satisfy a template.
-
-### Structured inspection
-
-Have Blender emit machine-readable facts that matter for the task. Useful checks include:
-
-- object names and types;
-- locations, rotations, scales, dimensions, and world-space bounding boxes;
-- vertex/edge/face counts;
-- materials and modifiers;
-- camera and light settings;
-- collection membership;
-- missing links or unexpected duplicate objects;
-- relevant distances and clearances.
-
-For physical fabrication, printing, rigging, or animation, read the applicable section of [specialized checks](references/fabrication-and-rigging.md).
-
-### Visual inspection
-
-Render several useful diagnostic views, normally including a perspective view plus orthographic or close-up views that expose likely problems. Inspect individual images closely; contact sheets may help locate views but do not replace detail inspection.
-
-Use inexpensive preview settings during iteration. Do not spend time on a high-sample final render while geometry, framing, lighting, intersections, materials, or proportions are still being corrected.
-
-Actually inspect the rendered images before declaring the work finished. Look for issues such as:
-
-- intersections and floating objects;
-- wrong scale or proportions;
-- bad camera framing;
-- shading, normal, smoothing, or material problems;
-- visible gaps, clipping, z-fighting, or unexpected booleans;
-- lighting that hides the form;
-- details that technically exist but are visually unreadable.
-
-If a problem is visible, fix it, rerender the affected views, and inspect again.
-
-## Live sessions and GUI control
-
-Use an available Blender MCP for useful live-state inspection or small interactive changes. Use GUI automation when the operation cannot be expressed reliably through the data API. Keep substantial transformations in durable scripts even when MCP executes them. Respect the sandbox and permissions for code execution; a live session does not expand authorization.
-
-## Finishing checklist
-
-Before handing Blender work back to the human:
-
-- rerun the relevant automation from a clean, understood starting state;
-- confirm Blender exits successfully with no important warnings or tracebacks;
-- confirm the intended `.blend` and requested exports were actually written;
-- inspect the final diagnostic renders;
-- verify dimensions, scale, object state, and other task-specific structural checks;
-- if exporting STL, GLB, FBX, OBJ, or another delivery format, verify the exported file exists and, when practical, re-import or otherwise validate it;
-- leave the scripts and important parameters understandable for the next agent or human who needs to modify the work.
+Confirm the saved `.blend` and requested exports exist. Re-import or independently inspect exports where practical, checking scale, materials, geometry, and animation as applicable. Deliver the editable source and scripts alongside requested outputs, with a brief account of what was verified and any remaining limitations.

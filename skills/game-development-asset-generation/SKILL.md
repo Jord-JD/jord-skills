@@ -1,34 +1,30 @@
 ---
 name: game-development-asset-generation
-description: "Plans, creates, and integrates game images, models, animation, and audio. Use when a game task needs new or revised sprites, textures, 3D models, animations, sound effects, music, or voice."
+description: "MANDATORY when creating, choosing, changing, or integrating game art, animation, or audio. Research comparable assets, establish a consistent direction, use suitable production tools, and inspect the result at gameplay scale and in motion. Applies to sprites, textures, models, effects, music, sound, and voice."
 ---
 
 # Game assets
 
-Produce the assets required by the game or feature brief, integrate them, and check them in gameplay before delivery. Begin production early enough to revise results. Preserve explicit prototype scope and existing assets that already fit the task.
+Make assets that belong in this game and work in its runtime. Preserve the existing art direction and useful assets. Produce only what the task needs; an individual pickup or animation does not require replacing the whole game.
 
-## Choose the asset pipeline for the art direction
+## Establish the target
 
-The user's brief and existing project style govern the choice. For an individual asset or feature, produce what that change needs; do not expand it into a full-game asset replacement. Preserve the established pipeline unless the user asks for a change or the requested result requires one.
+For a new art or sound direction, inspect at least two relevant games or authored references online. Actually view images or gameplay for visual assets, and listen to relevant examples when designing sound. Search snippets, descriptions, and filenames do not count. Study silhouette, palette, materials, motion, readability, or sound character as appropriate, including how the asset works alongside others.
 
-Choose per asset or system:
+Keep a brief note of sources, images or timestamps inspected, and the qualities to adapt or avoid. Check that both references were examined before choosing the direction. If a fetch fails, try another source and another available access method, such as a browser or direct download. Use the normal approval path for sandbox-blocked operations; one tool's network failure does not establish that research is unavailable. Disclose any evidence still missing after alternatives. Reuse established references for small additions. Match the game's identity without copying another creator's distinctive assets.
 
-* Use image generation or authored sprites and textures when painted detail, a specific character, or a consistent illustrated style matters.
-* Use Blender or a suitable model generator for hero objects that need controlled silhouettes, materials, rigging, and editable geometry.
-* Use procedural geometry, shaders, or code-drawn 2D art when they serve the visual direction, simulation, variation, or scale. Terrain, water, vegetation, and reactive effects can benefit from this approach. A procedural environment and an authored vehicle can work well together.
-* Use generated audio, samples, or intentional synthesis according to the sound direction. Tune variation, envelopes, layering, and the mix; generic oscillator beeps do not count as finished audio.
+For a substantial set, make a representative asset or concept first and inspect it in context before expanding the set. Record the shared palette, scale, camera, material, animation, or sound constraints that will keep production consistent. Extra concept sheets are useful only when they resolve a real design question.
 
-Judge the result in gameplay. Procedural art must meet the same standards for silhouette, composition, readability, lighting, detail, and motion as imported assets. Generated files need the same scrutiny. Replace generic stand-ins, but do not replace successful procedural work merely because it was made in code.
+## Produce and integrate
 
-## Establish visual targets before producing the set
+Choose tools for the result: image or audio generation, authored SVG or sprites, Blender, a suitable model generator, procedural geometry, shaders, or synthesis. Use available specialist skills. Verify unfamiliar tool capabilities before depending on them. Prefer a suitable working tool over blocking the task on an optional service.
 
-For a new game or substantial visual redesign, create or use supplied concept images for the important gameplay states. Save them in the project with short notes about palette, materials, camera, lighting, and the qualities to preserve. Compare in-game captures against these targets at a similar framing and scale. Reuse established references for small additions instead of restarting concept development.
+Use purpose-made imagery, shapes, textures, and sounds where they improve the result. Procedural work and generated files need the same quality checks. Simple art is valid when intentional; generic placeholders do not become finished assets just because they load.
 
-For a hero model, prepare clear views from the angles needed to resolve its shape, such as front, side, rear, and three-quarter views. Check that the views agree before modelling. Inspect silhouette and materials in renders, then inspect the exported asset in the game. Follow `blender-workflow` when using Blender. Keep editable source separate from the runtime export and check rendering cost, including material batches and draw calls as well as triangles.
-## Tool selection
+Keep editable sources and runtime exports organised. Check dimensions, units, pivots, transparency, spritesheet frame boundaries, animation timing, material compatibility, and resource cost as relevant. For models, use the views needed to establish shape, then inspect the exported model in the target renderer. For audio, check duration, clipping, loop boundaries, and levels in the mix. Keep required attribution and usage rights with third-party assets.
 
-Use available tools within the user's authorization. Read [asset tools](references/asset-tools.md) when selecting an unfamiliar service or local tool. External generation is optional. If a preferred tool is unavailable, use a suitable local or procedural alternative; ask for access only when the requested result depends on it. Do not publish or upload the game through a generation service unless requested.
+## Check it in the game
 
-## Completion
+Inspect integrated assets at their actual gameplay scale, against representative backgrounds, and in motion when animated. Check that players can distinguish important objects and states, and that the set looks or sounds consistent. Fix observed seams, unreadable silhouettes, bad deformation, awkward transitions, or overpowering effects; then inspect again.
 
-Inspect the integrated assets at actual gameplay size and in motion. Check consistency, silhouette, transparency, seams, animation transitions, audio loops, and mix where applicable. For hero models, inspect the runtime export as well as the editable source. Compare against established visual targets. Fix observed gaps, then recapture affected states; identify any concrete blocker or unverified output.
+For an asset-only request, use a representative preview and say that runtime integration remains untested. Do not claim to have heard audio from its waveform or viewed animation from one still. Deliver the requested files and briefly identify what was checked. Keep tests silent through `polite-browser-use` where applicable; do not publish or upload the game unless requested.
