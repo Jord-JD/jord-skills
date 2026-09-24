@@ -1,19 +1,18 @@
-"""Small, local SQLite message board shared by agent CLI entry points."""
+"""Immutable JSON posts for a message board shared through folder synchronization."""
 
 import argparse
-from contextlib import closing
 from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
 import re
-import sqlite3
 import sys
 import tempfile
-import time
+import uuid
 
 
-SCHEMA_VERSION = 2
+FORMAT_VERSION = 1
+MAX_FILE_BYTES = 2_000_000
 
 
 class SetupRequired(ValueError):
@@ -25,156 +24,75 @@ def config_path():
     return config_home.expanduser().resolve() / "agent-message-board/config.json"
 
 
-def database_path():
+def board_path():
     path = config_path()
     if not path.is_file():
-        raise SetupRequired("Ask the user where to create or access the board database, then run "
-                            "setup_agent_message_board.py --database <user-chosen-absolute-path>.")
+        raise SetupRequired("Ask the user where to create or access the board directory, then run "
+                            "setup_agent_message_board.py --directory <user-chosen-absolute-path>.")
     configuration = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(configuration, dict) or configuration.get("version") != 1:
+    if isinstance(configuration, dict) and configuration.get("version") == 1:
+        raise SetupRequired("This machine is configured for a SQLite board. Ask the user for a JSON "
+                            "board directory, then use setup_agent_message_board.py --directory. "
+                            "The existing database has not been changed.")
+    if not isinstance(configuration, dict) or configuration.get("version") != 2:
         raise ValueError(f"Invalid board configuration: {path}")
-    value = configuration.get("database")
+    value = configuration.get("directory")
     if not isinstance(value, str) or not value or not Path(value).is_absolute():
-        raise ValueError(f"Board configuration needs an absolute database path: {path}")
-    return Path(value)
+        raise ValueError(f"Board configuration needs an absolute directory path: {path}")
+    directory = Path(value)
+    if not (directory / "posts").is_dir():
+        raise SetupRequired(f"Configured board is missing at {directory}. Ask the user where to "
+                            "access or recreate it; do not create it automatically.")
+    return directory
 
 
-def connect(*, create=False, path=None):
-    path = database_path() if path is None else path
-    if create:
-        path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-    elif not path.is_file():
-        raise SetupRequired(f"Configured database is missing at {path}. Ask the user whether to "
-                            "recreate it there or choose an existing board; do not create it automatically.")
-    mode = "rwc" if create else "rw"
-    connection = sqlite3.connect(path.as_uri() + "?mode=" + mode, uri=True, timeout=10)
-    connection.row_factory = sqlite3.Row
-    connection.execute("PRAGMA foreign_keys = ON")
-    return connection
-
-
-def check_schema(connection):
-    version = connection.execute("PRAGMA user_version").fetchone()[0]
-    if version == 1:
-        raise ValueError("This board needs a username upgrade. Run setup_agent_message_board.py "
-                         "--database with the already configured database path.")
-    if version != SCHEMA_VERSION:
-        raise ValueError(f"Unsupported board schema {version}; expected {SCHEMA_VERSION}.")
-    # user_version is also used by other SQLite applications.
-    connection.execute("SELECT id, thread_id, title, body, username, project, created_at FROM posts LIMIT 0")
-    connection.execute("SELECT rowid, title, body FROM posts_fts LIMIT 0")
-
-
-def save_config(path):
-    destination = config_path()
-    destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+def write_json(path, value, *, replace=False):
+    """Publish a complete file; immutable posts must never replace an existing ID."""
     temporary = None
     try:
-        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=destination.parent,
-                                         delete=False) as stream:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
+                                         prefix=".board-", suffix=".tmp", delete=False) as stream:
             temporary = Path(stream.name)
-            json.dump({"version": 1, "database": str(path)}, stream, indent=2)
+            json.dump(value, stream, ensure_ascii=False, indent=2)
             stream.write("\n")
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temporary, destination)
+        if replace:
+            os.replace(temporary, path)
+        else:
+            # Linking publishes the finished file atomically and fails if it exists.
+            os.link(temporary, path)
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
 
 
+def save_config(directory):
+    destination = config_path()
+    destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+    write_json(destination, {"version": 2, "directory": str(directory)}, replace=True)
+
+
 def status():
     if not config_path().is_file():
         return {"configured": False, "config": str(config_path()),
-                "next_step": "Ask the user for the database location before setup, search, or posting."}
-    path = database_path()
-    with closing(connect()) as connection:
-        check_schema(connection)
-    return {"configured": True, "config": str(config_path()), "database": str(path)}
+                "next_step": "Ask the user for the board directory before setup, search, or posting."}
+    return {"configured": True, "config": str(config_path()), "directory": str(board_path())}
 
 
-def setup(database):
-    path = Path(database).expanduser()
+def setup(directory):
+    path = Path(directory).expanduser()
     if not path.is_absolute():
-        raise ValueError("Provide the absolute database file path chosen by the user.")
+        raise ValueError("Provide the absolute board directory chosen by the user.")
     path = path.resolve()
-    with closing(connect(create=True, path=path)) as connection:
-        # Changing journal mode can return BUSY immediately despite the connection
-        # timeout when several first-time setup processes open the same file.
-        deadline = time.monotonic() + 10
-        while True:
-            try:
-                connection.execute("PRAGMA journal_mode = WAL")
-                break
-            except sqlite3.OperationalError as error:
-                if str(error) not in ("database is locked", "database is busy") or time.monotonic() >= deadline:
-                    raise
-                time.sleep(0.05)
-        try:
-            connection.execute("BEGIN IMMEDIATE")
-            version = connection.execute("PRAGMA user_version").fetchone()[0]
-            if version not in (0, 1, SCHEMA_VERSION):
-                raise ValueError(f"Unsupported board schema {version}; database left intact.")
-            if version == 0:
-                if connection.execute(
-                    "SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' LIMIT 1"
-                ).fetchone():
-                    raise ValueError("The selected database contains other data; choose a board database.")
-                connection.execute("""
-                    CREATE TABLE posts (
-                        id INTEGER PRIMARY KEY,
-                        thread_id INTEGER REFERENCES posts(id),
-                        title TEXT NOT NULL,
-                        body TEXT NOT NULL,
-                        username TEXT NOT NULL,
-                        project TEXT,
-                        created_at TEXT NOT NULL,
-                        CHECK ((thread_id IS NULL AND length(title) > 0)
-                            OR (thread_id IS NOT NULL AND title = ''))
-                    )
-                """)
-                connection.execute("CREATE INDEX posts_thread ON posts(thread_id, id)")
-                connection.execute("CREATE INDEX posts_project ON posts(project)")
-                connection.execute("""
-                    CREATE VIRTUAL TABLE posts_fts USING fts5(
-                        title, body, content='posts', content_rowid='id'
-                    )
-                """)
-                connection.execute("""
-                    CREATE TRIGGER posts_insert AFTER INSERT ON posts BEGIN
-                        INSERT INTO posts_fts(rowid, title, body)
-                        VALUES (new.id, new.title, new.body);
-                    END
-                """)
-                connection.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
-            elif version == 1:
-                # Preserve conversation attribution for old posts without retaining
-                # separate model/session fields. IDs keep legacy names distinct.
-                authors = connection.execute(
-                    "SELECT id, agent, session FROM posts ORDER BY id"
-                ).fetchall()
-                connection.execute("ALTER TABLE posts RENAME COLUMN agent TO username")
-                names = {}
-                for author in authors:
-                    username = names.setdefault(
-                        (author["agent"], author["session"]), f"LegacyMember_{author['id']}"
-                    )
-                    connection.execute(
-                        "UPDATE posts SET username = ? WHERE id = ?", (username, author["id"]),
-                    )
-                connection.execute("ALTER TABLE posts DROP COLUMN session")
-                connection.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
-            check_schema(connection)
-            connection.commit()
-        except Exception:
-            connection.rollback()
-            raise
+    (path / "posts").mkdir(mode=0o700, parents=True, exist_ok=True)
     save_config(path)
-    return {"database": str(path), "config": str(config_path()), "schema_version": SCHEMA_VERSION}
+    return {"directory": str(path), "config": str(config_path()),
+            "format_version": FORMAT_VERSION}
 
 
 def clean_label(value, label, maximum=200):
-    if not value or not value.strip():
+    if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{label} must not be empty.")
     value = value.strip()
     if len(value) > maximum or any(ord(char) < 32 for char in value):
@@ -182,89 +100,153 @@ def clean_label(value, label, maximum=200):
     return value
 
 
+def post_id(value):
+    try:
+        parsed = uuid.UUID(value)
+    except (ValueError, AttributeError, TypeError):
+        raise ValueError("Post and thread IDs must be UUIDs.") from None
+    if str(parsed) != value:
+        raise ValueError("Use the complete lowercase UUID returned by the board.")
+    return value
+
+
+def validate_post(item):
+    if not isinstance(item, dict) or item.get("version") != FORMAT_VERSION:
+        raise ValueError("Unsupported post format.")
+    post_id(item.get("id"))
+    post_id(item.get("thread_id"))
+    clean_label(item.get("title"), "Title")
+    clean_label(item.get("username"), "Username", maximum=64)
+    if item.get("project") is not None:
+        clean_label(item["project"], "Project")
+    body = item.get("body")
+    if not isinstance(body, str) or not body.strip() or len(body.encode("utf-8")) > 256_000:
+        raise ValueError("Message body must contain text and be at most 256,000 UTF-8 bytes.")
+    try:
+        timestamp = datetime.fromisoformat(item["created_at"].replace("Z", "+00:00"))
+        if timestamp.utcoffset() is None:
+            raise ValueError("Timestamp needs a timezone.")
+    except (KeyError, AttributeError, TypeError, ValueError):
+        raise ValueError("Post needs an ISO 8601 timestamp with a timezone.") from None
+
+
+def read_post(path):
+    with path.open("rb") as stream:
+        data = stream.read(MAX_FILE_BYTES + 1)
+    if len(data) > MAX_FILE_BYTES:
+        raise ValueError("Post file is too large.")
+    item = json.loads(data)
+    validate_post(item)
+    if path.name != item["id"] + ".json":
+        raise ValueError("Filename does not match post ID; possible sync conflict copy.")
+    return item
+
+
+def load_posts(directory):
+    posts, warnings = {}, []
+    for path in sorted((directory / "posts").glob("*.json")):
+        try:
+            item = read_post(path)
+            posts[item["id"]] = item
+        except (ValueError, OSError) as error:
+            warnings.append(f"{path.name}: {error}")
+    return posts, warnings
+
+
+def add_warnings(result, warnings):
+    if warnings:
+        result["warnings"] = warnings[:20]
+        result["skipped_files"] = len(warnings)
+    return result
+
+
 def post(*, title=None, thread_id=None, body, username, project=None):
+    directory = board_path()
     username = clean_label(username, "Username", maximum=64)
-    if not body.strip():
-        raise ValueError("Message body must not be empty.")
-    if len(body.encode("utf-8")) > 256_000:
-        raise ValueError("Message body must be at most 256,000 UTF-8 bytes.")
     if thread_id is None:
         title = clean_label(title, "Title")
         project = clean_label(project, "Project") if project is not None else None
-    elif title is not None or project is not None:
-        raise ValueError("Replies inherit the thread title and project; omit --title and --project.")
-    timestamp = datetime.now(timezone.utc).isoformat()
-    with closing(connect()) as connection, connection:
-        check_schema(connection)
-        if thread_id is not None:
-            root = connection.execute(
-                "SELECT project FROM posts WHERE id = ? AND thread_id IS NULL", (thread_id,)
-            ).fetchone()
-            if root is None:
-                raise ValueError(f"Thread {thread_id} does not exist. Use a thread ID, not a reply ID.")
-            project, title = root["project"], ""
-        cursor = connection.execute(
-            """INSERT INTO posts(thread_id, title, body, username, project, created_at)
-               VALUES (?, ?, ?, ?, ?, ?)""",
-            (thread_id, title, body, username, project, timestamp),
-        )
-        post_id = cursor.lastrowid
-    return {"post_id": post_id, "thread_id": thread_id or post_id,
-            "username": username, "project": project, "created_at": timestamp}
+    else:
+        thread_id = post_id(thread_id)
+        if title is not None or project is not None:
+            raise ValueError("Replies inherit the thread title and project; omit --title and --project.")
+        root_path = directory / "posts" / (thread_id + ".json")
+        if not root_path.is_file():
+            raise ValueError("Thread is not available locally yet; wait for synchronization before replying.")
+        root = read_post(root_path)
+        if root["thread_id"] != root["id"]:
+            raise ValueError("Use a thread ID, not a reply ID.")
+        project, title = root.get("project"), root["title"]
+    identifier = str(uuid.uuid4())
+    item = {"version": FORMAT_VERSION, "id": identifier, "thread_id": thread_id or identifier,
+            "title": title, "body": body, "username": username, "project": project,
+            "created_at": datetime.now(timezone.utc).isoformat()}
+    validate_post(item)
+    write_json(directory / "posts" / (identifier + ".json"), item)
+    return {"post_id": identifier, "thread_id": item["thread_id"], "username": username,
+            "project": project, "created_at": item["created_at"]}
+
+
+def time_key(item):
+    return datetime.fromisoformat(item["created_at"].replace("Z", "+00:00")), item["id"]
+
+
+def words(text):
+    return re.findall(r"\w+", text.casefold(), flags=re.UNICODE)
 
 
 def search(query, *, project=None, limit=10, offset=0):
-    # Literal words, OR'ed: agent queries cannot accidentally become FTS operators.
-    terms = list(dict.fromkeys(re.findall(r"\w+", query, flags=re.UNICODE)))
-    if not terms:
-        raise ValueError("Search needs at least one word or number.")
-    if len(terms) > 64:
-        raise ValueError("Search accepts at most 64 distinct terms; use a short query.")
-    expression = " OR ".join('"' + term + '"' for term in terms)
-    with closing(connect()) as connection:
-        check_schema(connection)
-        rows = connection.execute(
-            """SELECT p.id AS post_id, COALESCE(p.thread_id, p.id) AS thread_id,
-                      root.title, p.username, p.project, p.created_at,
-                      snippet(posts_fts, -1, '', '', ' … ', 40) AS excerpt
-               FROM posts_fts JOIN posts p ON p.id = posts_fts.rowid
-               JOIN posts root ON root.id = COALESCE(p.thread_id, p.id)
-               WHERE posts_fts MATCH ? AND (? IS NULL OR p.project = ? OR p.project IS NULL)
-               ORDER BY bm25(posts_fts, 5.0, 1.0), p.id DESC LIMIT ? OFFSET ?""",
-            (expression, project, project, limit + 1, offset),
-        ).fetchall()
-    return {"matches": [dict(row) for row in rows[:limit]],
-            "next_offset": offset + limit if len(rows) > limit else None}
+    posts, warnings = load_posts(board_path())
+    terms = set(words(query))
+    if not terms or len(terms) > 64:
+        raise ValueError("Search needs between 1 and 64 distinct words or numbers.")
+    ranked = []
+    for item in posts.values():
+        if project is not None and item.get("project") not in (None, project):
+            continue
+        score = 5 * len(terms.intersection(words(item["title"])))
+        score += len(terms.intersection(words(item["body"])))
+        if score:
+            ranked.append((score, time_key(item), item))
+    ranked.sort(key=lambda match: (match[0], match[1]), reverse=True)
+    matches = []
+    for _, _, item in ranked[offset:offset + limit]:
+        body = item["body"]
+        first_match = next((match.start() for match in re.finditer(r"\w+", body)
+                            if match.group().casefold() in terms), 0)
+        start = max(0, first_match - 80)
+        excerpt = ("… " if start else "") + body[start:start + 280]
+        if start + 280 < len(body):
+            excerpt += " …"
+        root = posts.get(item["thread_id"])
+        matches.append({"post_id": item["id"], "thread_id": item["thread_id"],
+                        "title": item["title"], "username": item["username"],
+                        "project": item.get("project"), "created_at": item["created_at"],
+                        "excerpt": excerpt,
+                        "thread_available": root is not None and root["id"] == root["thread_id"]})
+    return add_warnings({"matches": matches,
+                         "next_offset": offset + limit if len(ranked) > offset + limit else None}, warnings)
 
 
 def read_thread(thread_id, *, limit=10, offset=0):
-    with closing(connect()) as connection, connection:
-        check_schema(connection)
-        connection.execute("BEGIN")
-        root = connection.execute(
-            "SELECT * FROM posts WHERE id = ? AND thread_id IS NULL", (thread_id,)
-        ).fetchone()
-        if root is None:
-            raise ValueError(f"Thread {thread_id} does not exist.")
-        replies = connection.execute(
-            "SELECT * FROM posts WHERE thread_id = ? ORDER BY id LIMIT ? OFFSET ?",
-            (thread_id, limit + 1, offset),
-        ).fetchall()
-    return {"thread": dict(root), "replies": [dict(row) for row in replies[:limit]],
-            "next_offset": offset + limit if len(replies) > limit else None}
-
-
-def positive_integer(value):
-    number = int(value)
-    if number < 1:
-        raise argparse.ArgumentTypeError("must be positive")
-    return number
+    thread_id = post_id(thread_id)
+    posts, warnings = load_posts(board_path())
+    root = posts.get(thread_id)
+    if root is not None and root["thread_id"] != root["id"]:
+        raise ValueError("Use a thread ID, not a reply ID.")
+    replies = sorted((item for item in posts.values()
+                      if item["thread_id"] == thread_id and item["id"] != thread_id), key=time_key)
+    if root is None and not replies and not warnings:
+        raise ValueError("Thread is not available locally; it may not have synchronized yet.")
+    return add_warnings({"thread": root, "replies": replies[offset:offset + limit],
+                         "missing_thread": root is None,
+                         "next_offset": offset + limit if len(replies) > offset + limit else None}, warnings)
 
 
 def page_limit(value):
-    number = positive_integer(value)
-    if number > 100:
-        raise argparse.ArgumentTypeError("must be at most 100")
+    number = int(value)
+    if not 1 <= number <= 100:
+        raise argparse.ArgumentTypeError("must be between 1 and 100")
     return number
 
 
@@ -281,7 +263,7 @@ def run(action):
     except SetupRequired as error:
         print(json.dumps({"error": str(error), "code": "setup_required"}), file=sys.stderr)
         return 2
-    except (ValueError, OSError, sqlite3.Error) as error:
+    except (ValueError, OSError) as error:
         print(json.dumps({"error": str(error)}, ensure_ascii=False), file=sys.stderr)
         return 1
     print(json.dumps(result, ensure_ascii=False, indent=2))

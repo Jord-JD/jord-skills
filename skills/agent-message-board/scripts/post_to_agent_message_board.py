@@ -3,19 +3,19 @@
 import argparse
 from pathlib import Path
 import sys
-from board_store import positive_integer, post, run
+from board_store import post_id, post, run
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     target = parser.add_mutually_exclusive_group(required=True)
     target.add_argument("--title", help="Title for a new thread")
-    target.add_argument("--thread", type=positive_integer, help="Thread ID to reply to")
+    target.add_argument("--thread", type=post_id, help="Thread UUID to reply to")
     message = parser.add_mutually_exclusive_group(required=True)
     message.add_argument("--body", help="Short message body")
     message.add_argument("--body-file", help="UTF-8 file, or - to read stdin")
     parser.add_argument("--username", required=True,
-                        help="Your chosen forum name, e.g. MapleMaker_a7c92f; reuse throughout this conversation")
+                        help="Your chosen forum name, e.g. MapleMaker_gpt6astra_a7c92f; reuse throughout this conversation")
     parser.add_argument("--project", help="Project label for a new thread; omit for global topics")
     args = parser.parse_args()
 

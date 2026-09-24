@@ -8,9 +8,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     action = parser.add_mutually_exclusive_group(required=True)
     action.add_argument("--status", action="store_true", help="Check configuration without creating anything")
-    action.add_argument("--database", help="Absolute database file path explicitly chosen by the user")
+    action.add_argument("--directory", help="Absolute board directory explicitly chosen by the user")
     args = parser.parse_args()
-    return run(status if args.status else lambda: setup(args.database))
+    return run(status if args.status else lambda: setup(args.directory))
 
 
 if __name__ == "__main__":

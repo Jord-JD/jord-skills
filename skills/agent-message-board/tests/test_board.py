@@ -1,24 +1,27 @@
-"""Exercise public scripts with isolated configuration and separate processes."""
+"""Exercise JSON board commands, concurrent writers, and independent folder replicas."""
 
 from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 from pathlib import Path
-import sqlite3
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+import uuid
 
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
+sys.path.insert(0, str(SCRIPTS))
+from board_store import write_json
 
 
 class BoardTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.database = Path(self.temp.name) / "chosen board/board.sqlite3"
+        self.board = Path(self.temp.name) / "chosen board"
         self.config_home = Path(self.temp.name) / "config"
         self.environment = dict(os.environ, XDG_CONFIG_HOME=str(self.config_home),
                                 PYTHONDONTWRITEBYTECODE="1")
@@ -38,17 +41,24 @@ class BoardTests(unittest.TestCase):
         self.assertEqual(result.stdout, "")
         return result
 
-    def setup_board(self):
-        return self.invoke("setup_agent_message_board.py", "--database", self.database)
+    def setup_board(self, directory=None, environment=None):
+        return self.invoke("setup_agent_message_board.py", "--directory", directory or self.board,
+                           environment=environment)
 
-    def post(self, title="Database setup", body="Use a local database.", username="MapleMaker_a7c92f", **options):
+    def post(self, title="Database setup", body="Use a local database.",
+             username="MapleMaker_a7c92f", **options):
         arguments = ["--username", username, "--title", title, "--body", body]
         for key, value in options.items():
             arguments.extend(["--" + key, value])
         return self.invoke("post_to_agent_message_board.py", *arguments)
 
-    def search(self, query, *arguments):
-        return self.invoke("search_agent_message_board.py", "--query", query, *arguments)
+    def reply(self, thread, body="Database fix verified.", environment=None):
+        return self.invoke("post_to_agent_message_board.py", "--username", "CopperFinch_83bd12",
+                           "--thread", thread, "--body", body, environment=environment)
+
+    def search(self, query, *arguments, environment=None):
+        return self.invoke("search_agent_message_board.py", "--query", query, *arguments,
+                           environment=environment)
 
     def test_first_use_requires_location_and_creates_nothing(self):
         status = self.invoke("setup_agent_message_board.py", "--status")
@@ -62,21 +72,23 @@ class BoardTests(unittest.TestCase):
             self.assertEqual(result.returncode, 2)
             self.assertEqual(json.loads(result.stderr)["code"], "setup_required")
         self.assertFalse(self.config_home.exists())
-        self.assertFalse(self.database.parent.exists())
+        self.assertFalse(self.board.exists())
 
-    def test_missing_configured_database_is_not_recreated(self):
+    def test_missing_board_is_not_recreated(self):
         self.setup_board()
-        self.database.unlink()
+        shutil.rmtree(self.board)
         result = self.invoke("search_agent_message_board.py", "--query", "testing", success=False)
         self.assertEqual(result.returncode, 2)
-        self.assertFalse(self.database.exists())
+        self.assertFalse(self.board.exists())
 
     def test_setup_preserves_posts_and_reply_identity(self):
         self.setup_board()
         root = self.post(project="owner/repo")
+        root_path = self.board / "posts" / (root["post_id"] + ".json")
+        original = root_path.read_bytes()
         reply = self.invoke("post_to_agent_message_board.py", "--username", "CopperFinch_83bd12",
-                            "--thread", root["thread_id"],
-                            "--body-file", "-", input="Verified: café tests pass.\nSecond line.")
+                            "--thread", root["thread_id"], "--body-file", "-",
+                            input="Verified: café tests pass.\nSecond line.")
         self.setup_board()
         self.assertTrue(self.invoke("setup_agent_message_board.py", "--status")["configured"])
         thread = self.invoke("search_agent_message_board.py", "--thread", root["thread_id"])
@@ -87,7 +99,9 @@ class BoardTests(unittest.TestCase):
         match = self.search("café")["matches"][0]
         self.assertEqual(match["post_id"], reply["post_id"])
         self.assertEqual(match["thread_id"], root["thread_id"])
-        self.assertEqual(match["title"], "Database setup")
+        self.assertTrue(match["thread_available"])
+        self.assertEqual(root_path.read_bytes(), original)
+        self.assertEqual(str(uuid.UUID(root["post_id"])), root["post_id"])
 
     def test_scope_literal_queries_and_empty_results(self):
         self.setup_board()
@@ -105,39 +119,35 @@ class BoardTests(unittest.TestCase):
         message = Path(self.temp.name) / "message.md"
         message.write_text("A user's preference.\nKeep it concise.", encoding="utf-8")
         result = self.invoke("post_to_agent_message_board.py", "--title", "Preference",
-                             "--username", "MapleMaker_a7c92f", "--body-file", message)
-        self.assertEqual(result["username"], "MapleMaker_a7c92f")
+                             "--username", "MapleMaker_gpt6astra_a7c92f", "--body-file", message)
+        self.assertEqual(result["username"], "MapleMaker_gpt6astra_a7c92f")
         self.assertEqual(self.post(username=result["username"])["username"], result["username"])
         self.assertNotIn("agent", result)
         self.assertNotIn("session", result)
-        match = self.search("preference")["matches"][0]
-        self.assertEqual(match["username"], result["username"])
-        self.assertNotIn("agent", match)
-        self.assertNotIn("session", match)
+        self.assertEqual(self.search("preference")["matches"][0]["username"], result["username"])
 
     def test_invalid_posts_leave_no_partial_data(self):
         self.setup_board()
         self.invoke("post_to_agent_message_board.py", "--title", "Oops", "--body", "x", success=False)
-        self.invoke("post_to_agent_message_board.py", "--username", "MapleMaker_a7c92f", "--thread", 999,
-                    "--body", "orphan", success=False)
+        self.invoke("post_to_agent_message_board.py", "--username", "MapleMaker_a7c92f", "--thread",
+                    str(uuid.uuid4()), "--body", "orphan", success=False)
         self.invoke("post_to_agent_message_board.py", "--username", "MapleMaker_a7c92f", "--title", "Empty",
                     "--body", "  ", success=False)
+        self.invoke("post_to_agent_message_board.py", "--username", "MapleMaker_a7c92f", "--thread",
+                    "../../outside", "--body", "invalid", success=False)
         root = self.post()
-        reply = self.invoke("post_to_agent_message_board.py", "--username", "MapleMaker_a7c92f", "--thread",
-                            root["thread_id"], "--body", "first reply")
+        reply = self.reply(root["thread_id"])
         self.invoke("post_to_agent_message_board.py", "--username", "MapleMaker_a7c92f", "--thread",
                     reply["post_id"], "--body", "nested", success=False)
         self.invoke("post_to_agent_message_board.py", "--username", "MapleMaker_a7c92f", "--thread",
                     root["thread_id"], "--project", "wrong", "--body", "wrong", success=False)
-        with sqlite3.connect(self.database) as connection:
-            self.assertEqual(connection.execute("SELECT count(*) FROM posts").fetchone()[0], 2)
+        self.assertEqual(len(list((self.board / "posts").iterdir())), 2)
 
     def test_pagination(self):
         self.setup_board()
         root = self.post()
         for index in range(3):
-            self.invoke("post_to_agent_message_board.py", "--username", "MapleMaker_a7c92f", "--thread",
-                        root["thread_id"], "--body", f"database reply {index}")
+            self.reply(root["thread_id"], f"database reply {index}")
         first = self.invoke("search_agent_message_board.py", "--thread", root["thread_id"], "--limit", 2)
         second = self.invoke("search_agent_message_board.py", "--thread", root["thread_id"],
                              "--limit", 2, "--offset", first["next_offset"])
@@ -146,85 +156,109 @@ class BoardTests(unittest.TestCase):
         self.assertIsNone(second["next_offset"])
         matches = self.search("database", "--limit", 2)
         rest = self.search("database", "--limit", 2, "--offset", matches["next_offset"])
-        self.assertEqual(len(matches["matches"] + rest["matches"]), 4)
+        self.assertEqual(len({m["post_id"] for m in matches["matches"] + rest["matches"]}), 4)
         self.assertIsNone(rest["next_offset"])
-        self.invoke("search_agent_message_board.py", "--query", "database", "--limit", 101,
-                    success=False)
+        self.invoke("search_agent_message_board.py", "--query", "database", "--limit", 101, success=False)
 
     def test_concurrent_setup_and_posts(self):
         with ThreadPoolExecutor(max_workers=4) as executor:
             list(executor.map(lambda _: self.setup_board(), range(4)))
-            posts = list(executor.map(lambda i: self.post(title=f"Concurrent {i}", username=f"MapleMaker_{i:06x}"), range(16)))
+            posts = list(executor.map(lambda i: self.post(title=f"Concurrent {i}",
+                                     username=f"MapleMaker_{i:06x}"), range(16)))
         self.assertEqual(len({post["post_id"] for post in posts}), 16)
-        self.assertEqual(len({post["username"] for post in posts}), 16)
         self.assertEqual(len(self.search("concurrent", "--limit", 100)["matches"]), 16)
-        with sqlite3.connect(self.database) as connection:
-            self.assertEqual(connection.execute("PRAGMA integrity_check").fetchone()[0], "ok")
+        self.assertEqual(len(list((self.board / "posts").iterdir())), 16)
 
-    def test_existing_board_can_be_accessed_from_new_configuration(self):
+    def test_independent_replicas_merge_concurrent_replies(self):
         self.setup_board()
         root = self.post()
-        environment = dict(self.environment, XDG_CONFIG_HOME=str(Path(self.temp.name) / "other-config"))
-        self.invoke("setup_agent_message_board.py", "--database", self.database, environment=environment)
-        result = self.invoke("search_agent_message_board.py", "--thread", root["thread_id"],
-                             environment=environment)
-        self.assertEqual(result["thread"]["id"], root["post_id"])
+        other_board = Path(self.temp.name) / "other-machine-board"
+        other_environment = dict(self.environment, XDG_CONFIG_HOME=str(Path(self.temp.name) / "other-config"))
+        shutil.copytree(self.board, other_board)
+        self.setup_board(other_board, other_environment)
+        one = self.reply(root["thread_id"], "First offline reply.")
+        two = self.reply(root["thread_id"], "Second offline reply.", environment=other_environment)
+        self.assertNotEqual(one["post_id"], two["post_id"])
+        for source, destination in ((self.board, other_board), (other_board, self.board)):
+            for path in (source / "posts").glob("*.json"):
+                target = destination / "posts" / path.name
+                if not target.exists():
+                    shutil.copyfile(path, target)
+        for environment in (self.environment, other_environment):
+            thread = self.invoke("search_agent_message_board.py", "--thread", root["thread_id"],
+                                 environment=environment)
+            self.assertEqual({p["id"] for p in thread["replies"]}, {one["post_id"], two["post_id"]})
 
-    def test_invalid_setup_does_not_save_configuration(self):
-        self.invoke("setup_agent_message_board.py", "--database", "relative.db", success=False)
-        self.database.parent.mkdir()
-        with sqlite3.connect(self.database) as connection:
-            connection.execute("CREATE TABLE unrelated (value TEXT)")
-            connection.execute("INSERT INTO unrelated VALUES ('keep')")
-        self.invoke("setup_agent_message_board.py", "--database", self.database, success=False)
-        self.assertFalse(self.config_home.exists())
-        with sqlite3.connect(self.database) as connection:
-            self.assertEqual(connection.execute("SELECT value FROM unrelated").fetchone()[0], "keep")
-            connection.execute("PRAGMA user_version = 1")
-        self.invoke("setup_agent_message_board.py", "--database", self.database, success=False)
-        self.assertFalse(self.config_home.exists())
-
-    def test_future_schema_is_not_overwritten(self):
-        self.setup_board()
-        self.post()
-        with sqlite3.connect(self.database) as connection:
-            connection.execute("PRAGMA user_version = 999")
-        self.invoke("setup_agent_message_board.py", "--database", self.database, success=False)
-        self.invoke("search_agent_message_board.py", "--query", "database", success=False)
-        with sqlite3.connect(self.database) as connection:
-            self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 999)
-            self.assertEqual(connection.execute("SELECT count(*) FROM posts").fetchone()[0], 1)
-
-    def test_upgrade_preserves_old_threads_and_author_groups(self):
+    def test_reply_can_arrive_before_root(self):
         self.setup_board()
         root = self.post()
-        reply = self.invoke("post_to_agent_message_board.py", "--username", "MapleMaker_a7c92f",
-                            "--thread", root["thread_id"], "--body", "Database fix verified.")
-        other = self.post()
-        with sqlite3.connect(self.database) as connection:
-            connection.execute("ALTER TABLE posts RENAME COLUMN username TO agent")
-            connection.execute("ALTER TABLE posts ADD COLUMN session TEXT NOT NULL DEFAULT 'run-one'")
-            connection.execute("UPDATE posts SET agent = 'openai-gpt-6-astra-high'")
-            connection.execute("UPDATE posts SET session = 'run-two' WHERE id = ?", (other["post_id"],))
-            connection.execute("PRAGMA user_version = 1")
-        self.invoke("search_agent_message_board.py", "--query", "database", success=False)
-        self.setup_board()
+        reply = self.reply(root["thread_id"])
+        root_path = self.board / "posts" / (root["post_id"] + ".json")
+        original = root_path.read_bytes()
+        root_path.unlink()
+        result = self.search("database")
+        self.assertEqual(result["matches"][0]["post_id"], reply["post_id"])
+        self.assertFalse(result["matches"][0]["thread_available"])
         thread = self.invoke("search_agent_message_board.py", "--thread", root["thread_id"])
-        self.assertEqual(thread["thread"]["username"], f"LegacyMember_{root['post_id']}")
-        self.assertEqual(thread["replies"][0]["username"], thread["thread"]["username"])
-        self.assertEqual(thread["replies"][0]["id"], reply["post_id"])
-        self.assertEqual(thread["replies"][0]["body"], "Database fix verified.")
-        other_thread = self.invoke("search_agent_message_board.py", "--thread", other["thread_id"])
-        self.assertNotEqual(other_thread["thread"]["username"], thread["thread"]["username"])
-        self.assertEqual(len(self.search("database")["matches"]), 3)
+        self.assertTrue(thread["missing_thread"])
+        self.assertIsNone(thread["thread"])
+        self.assertEqual(len(thread["replies"]), 1)
+        root_path.write_bytes(original)
+        self.assertFalse(self.invoke("search_agent_message_board.py", "--thread", root["thread_id"])["missing_thread"])
+
+    def test_incomplete_malformed_and_conflict_files_are_reported(self):
         self.setup_board()
-        self.post(username="CopperFinch_opus5.5_83bd12")
-        with sqlite3.connect(self.database) as connection:
-            columns = {row[1] for row in connection.execute("PRAGMA table_info(posts)")}
-            self.assertIn("username", columns)
-            self.assertNotIn("agent", columns)
-            self.assertNotIn("session", columns)
-            self.assertEqual(connection.execute("PRAGMA foreign_key_check").fetchall(), [])
+        root = self.post()
+        posts = self.board / "posts"
+        (posts / ".unfinished.tmp").write_text('{"partial":', encoding="utf-8")
+        broken = posts / (str(uuid.uuid4()) + ".json")
+        broken.write_text('{"partial":', encoding="utf-8")
+        original = posts / (root["post_id"] + ".json")
+        shutil.copyfile(original, posts / (root["post_id"] + ".sync-conflict.json"))
+        result = self.search("database")
+        self.assertEqual(len(result["matches"]), 1)
+        self.assertEqual(result["skipped_files"], 2)
+        self.assertEqual(len(result["warnings"]), 2)
+        self.assertIn("warnings", self.search("nomatch"))
+
+    def test_post_publication_cannot_overwrite_an_existing_file(self):
+        self.setup_board()
+        root = self.post()
+        path = self.board / "posts" / (root["post_id"] + ".json")
+        original = path.read_bytes()
+        with self.assertRaises(FileExistsError):
+            write_json(path, {"body": "replacement"})
+        self.assertEqual(path.read_bytes(), original)
+        self.assertEqual(len(list(path.parent.iterdir())), 1)
+
+    def test_invalid_setup_and_old_sqlite_configuration_are_not_changed(self):
+        self.invoke("setup_agent_message_board.py", "--directory", "relative", success=False)
+        selected_file = Path(self.temp.name) / "existing.sqlite3"
+        selected_file.write_bytes(b"leave me alone")
+        self.invoke("setup_agent_message_board.py", "--directory", selected_file, success=False)
+        self.assertFalse(self.config_home.exists())
+        config = self.config_home / "agent-message-board/config.json"
+        config.parent.mkdir(parents=True)
+        original = json.dumps({"version": 1, "database": str(selected_file)})
+        config.write_text(original, encoding="utf-8")
+        result = self.invoke("setup_agent_message_board.py", "--status", success=False)
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(config.read_text(), original)
+        self.assertEqual(selected_file.read_bytes(), b"leave me alone")
+        self.assertFalse(self.board.exists())
+
+    def test_unsupported_post_format_does_not_break_valid_search(self):
+        self.setup_board()
+        root = self.post()
+        path = self.board / "posts" / (root["post_id"] + ".json")
+        future = json.loads(path.read_text())
+        future["version"] = 99
+        future["id"] = str(uuid.uuid4())
+        future["thread_id"] = future["id"]
+        (path.parent / (future["id"] + ".json")).write_text(json.dumps(future))
+        result = self.search("database")
+        self.assertEqual(len(result["matches"]), 1)
+        self.assertEqual(result["skipped_files"], 1)
 
 
 if __name__ == "__main__":
