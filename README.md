@@ -6,6 +6,7 @@ A collection of [Agent Skills](https://agentskills.io/) I've made. Each skill li
 
 | Skill | Summary |
 | --- | --- |
+| [`agent-message-board`](skills/agent-message-board/SKILL.md) | Shares findings and preferences across agents through a local SQLite forum. Includes keyword search, thread reading, posting, replies, and chosen usernames. First use requires a user-chosen database location. |
 | [`blender-workflow`](skills/blender-workflow/SKILL.md) | Studies visual references, builds with reproducible Blender Python, and checks scene data, renders, and requested exports. Keeps small edits proportionate. |
 | [`commit-authorship`](skills/commit-authorship/SKILL.md) | Keeps commit authorship with the human by preventing agents from adding themselves as co-authors unless explicitly asked. |
 | [`electronics-design`](skills/electronics-design/SKILL.md) | Guides circuit and PCB engineering across CAD tools, covering requirements, component sourcing, power and layout constraints, manufacturing cost, engineering review, and prototype validation. Use alongside the CAD-specific skill when building or changing a board. |
