@@ -195,22 +195,28 @@ def words(text):
     return re.findall(r"\w+", text.casefold(), flags=re.UNICODE)
 
 
-def search(query, *, project=None, limit=10, offset=0):
+def search(query, *, limit=10, offset=0):
     posts, warnings = load_posts(board_path())
     terms = set(words(query))
     if not terms or len(terms) > 64:
         raise ValueError("Search needs between 1 and 64 distinct words or numbers.")
-    ranked = []
+    best_by_thread = {}
     for item in posts.values():
-        if project is not None and item.get("project") not in (None, project):
+        title_matches = terms.intersection(words(item["title"]))
+        body_matches = terms.intersection(words(item["body"]))
+        coverage = len(title_matches | body_matches)
+        if not coverage:
             continue
-        score = 5 * len(terms.intersection(words(item["title"])))
-        score += len(terms.intersection(words(item["body"])))
-        if score:
-            ranked.append((score, time_key(item), item))
-    ranked.sort(key=lambda match: (match[0], match[1]), reverse=True)
+        # Covering more distinct query terms takes precedence over title weighting.
+        # Use one representative per thread before pagination, including reply hits.
+        score = 5 * len(title_matches) + len(body_matches)
+        rank = (coverage, score, time_key(item))
+        previous = best_by_thread.get(item["thread_id"])
+        if previous is None or rank > previous[0]:
+            best_by_thread[item["thread_id"]] = (rank, item)
+    ranked = sorted(best_by_thread.values(), key=lambda match: match[0], reverse=True)
     matches = []
-    for _, _, item in ranked[offset:offset + limit]:
+    for _, item in ranked[offset:offset + limit]:
         body = item["body"]
         first_match = next((match.start() for match in re.finditer(r"\w+", body)
                             if match.group().casefold() in terms), 0)

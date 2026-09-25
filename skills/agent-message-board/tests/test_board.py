@@ -103,15 +103,17 @@ class BoardTests(unittest.TestCase):
         self.assertEqual(root_path.read_bytes(), original)
         self.assertEqual(str(uuid.UUID(root["post_id"])), root["post_id"])
 
-    def test_scope_literal_queries_and_empty_results(self):
+    def test_search_includes_all_projects_and_preserves_labels(self):
         self.setup_board()
         shared = self.post()
         local = self.post(project="owner/repo")
-        self.post(project="owner/other")
-        matches = self.search('"database" (missing) *', "--project", "owner/repo")["matches"]
+        other = self.post(project="owner/other")
+        matches = self.search('"database" (missing) *')["matches"]
         self.assertEqual({row["post_id"] for row in matches},
-                         {shared["post_id"], local["post_id"]})
-        self.assertEqual(len(self.search("database")["matches"]), 3)
+                         {shared["post_id"], local["post_id"], other["post_id"]})
+        self.assertEqual({row["project"] for row in matches}, {None, "owner/repo", "owner/other"})
+        self.invoke("search_agent_message_board.py", "--query", "database", "--project", "owner/repo",
+                    success=False)
         self.assertEqual(self.search("xyznotfound"), {"matches": [], "next_offset": None})
 
     def test_username_reuse_and_body_file(self):
@@ -154,11 +156,49 @@ class BoardTests(unittest.TestCase):
         self.assertEqual(len(first["replies"]), 2)
         self.assertEqual(len(second["replies"]), 1)
         self.assertIsNone(second["next_offset"])
+        for index in range(3):
+            self.post(title=f"Database discussion {index}")
         matches = self.search("database", "--limit", 2)
         rest = self.search("database", "--limit", 2, "--offset", matches["next_offset"])
         self.assertEqual(len({m["post_id"] for m in matches["matches"] + rest["matches"]}), 4)
         self.assertIsNone(rest["next_offset"])
         self.invoke("search_agent_message_board.py", "--query", "database", "--limit", 101, success=False)
+
+    def test_search_prioritizes_distinct_query_coverage_over_title_weight(self):
+        self.setup_board()
+        broad = self.post(title="Troubleshooting notes", body="USB packet timeout fixed.")
+        partial = self.post(title="USB packet", body="USB USB USB packet")
+        narrow = self.post(title="USB", body="USB " * 50)
+        result = self.search("USB packet timeout")["matches"]
+        self.assertEqual([row["post_id"] for row in result],
+                         [broad["post_id"], partial["post_id"], narrow["post_id"]])
+        repeated = self.search("usb USB packet timeout timeout")["matches"]
+        self.assertEqual([row["post_id"] for row in repeated], [row["post_id"] for row in result])
+
+    def test_search_retains_title_weight_for_equal_query_coverage(self):
+        self.setup_board()
+        title_hit = self.post(title="USB packet", body="Troubleshooting notes.")
+        body_hit = self.post(title="Troubleshooting notes", body="USB packet")
+        result = self.search("usb packet")["matches"]
+        self.assertEqual([row["post_id"] for row in result], [title_hit["post_id"], body_hit["post_id"]])
+
+    def test_search_keeps_best_reply_without_crowding_other_threads(self):
+        self.setup_board()
+        busy = self.post(title="USB notes", body="USB connection troubleshooting.")
+        best = self.reply(busy["thread_id"], "USB packet timeout fixed by changing the buffer.")
+        for index in range(8):
+            self.reply(busy["thread_id"], f"USB packet observation {index}")
+        other = self.post(title="Packet timeout", body="Another device behaves differently.")
+        third = self.post(title="USB", body="A separate discussion.")
+        first = self.search("usb packet timeout", "--limit", 2)
+        second = self.search("usb packet timeout", "--limit", 2, "--offset", first["next_offset"])
+        self.assertEqual(len(first["matches"]), 2)
+        self.assertEqual(first["matches"][0]["post_id"], best["post_id"])
+        self.assertIn("changing the buffer", first["matches"][0]["excerpt"])
+        results = first["matches"] + second["matches"]
+        self.assertEqual([row["thread_id"] for row in results],
+                         [busy["thread_id"], other["thread_id"], third["thread_id"]])
+        self.assertIsNone(second["next_offset"])
 
     def test_concurrent_setup_and_posts(self):
         with ThreadPoolExecutor(max_workers=4) as executor:
