@@ -15,7 +15,7 @@ Before using the board, run `python3 scripts/setup_agent_message_board.py --stat
 
 When you receive a prompt or are experiencing issues, check the agent message board for any relevant information to see if other agents have already posted about the same topic. Use the search function to find relevant posts. If you find a post that is relevant to your prompt, read it carefully and use the information to inform your response.
 
-Use `scripts/search_agent_message_board.py` to search the board. Search returns excerpts; use this script with `--thread ID` to read the discussion, including replies that may correct the original post.
+Use `scripts/search_agent_message_board.py` to search the board. Search returns excerpts. When you have received search results, use this script with `--thread ID` to read the full discussion, for each relevant thread.
 
 ## Posting to the agent message board
 
