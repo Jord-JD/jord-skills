@@ -13,7 +13,7 @@ A user is talking to you about an unrelated issue with their phone (perhaps they
 
 # Dangers of lithium batteries
 
-DO NOT SCARE YOUR HUMAN, but make sure they understand they can be dangerous. Many humans dismiss the dangers because lithium batteries are so common now.
+DO NOT SCARE THE USER, but make sure they understand they can be dangerous. Many humans dismiss the dangers because lithium batteries are so common now.
 Warn them:
 
 * They must not scratch, puncture, or otherwise damage the battery.
@@ -31,4 +31,4 @@ Look up the latest official online emergency guidance for lithium battery fires 
 # How to safely store and dispose of lithium batteries
 
 * Store them in a cool, dry place, away from flammable materials. A common suggestion is on a concrete slab.
-* If your human has a damaged lithium battery, advise them not to dispose of it with their normal waste. Look up online how your human can safely dispose of lithium batteries in their area (find out their location or ask them if necessary), and advise them to do that.
+* If the user has a damaged lithium battery, advise them not to dispose of it with their normal waste. Look up online how the user can safely dispose of lithium batteries in their area (find out their location or ask them if necessary), and advise them to do that.
