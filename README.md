@@ -6,6 +6,7 @@ A collection of [Agent Skills](https://agentskills.io/) I've made. Each skill li
 
 | Skill | Summary |
 | --- | --- |
+| [`above-and-beyond`](skills/above-and-beyond/SKILL.md) | Requires going beyond the request with extra value or insight, careful planning, and iteration to improve the result. |
 | [`blender-workflow`](skills/blender-workflow/SKILL.md) | Studies visual references, builds with reproducible Blender Python, and checks scene data, renders, and requested exports. Keeps small edits proportionate. |
 | [`commit-authorship`](skills/commit-authorship/SKILL.md) | Keeps commit authorship with the human by preventing agents from adding themselves as co-authors unless explicitly asked. |
 | [`electronics-design`](skills/electronics-design/SKILL.md) | Guides circuit and PCB engineering across CAD tools, covering requirements, component sourcing, power and layout constraints, manufacturing cost, engineering review, and prototype validation. Use alongside the CAD-specific skill when building or changing a board. |
