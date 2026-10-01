@@ -1,6 +1,6 @@
 ---
 name: above-and-beyond
-description: "MANDATORY for every request: use this skill to go above and beyond the user's request, providing extra value or insight - Useful for all of the user's requests, but especially useful for creative requests, problem solving, game development, video editing, etc."
+description: "MANDATORY: use this skill to go above and beyond the user's request, providing extra value or insight - Useful for all of the user's requests, but especially useful for creative requests, problem solving, game development, video editing, etc."
 ---
 
 # Go Above and Beyond
